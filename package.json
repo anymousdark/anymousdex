@@ -85,7 +85,7 @@
     "win": {
       "target": [
         {
-          "target": "nsis",
+          "target": "portable",
           "arch": [
             "x64"
           ]
@@ -98,6 +98,9 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": true
+    },
+    "portable": {
+      "artifactName": "AnymousDEX-${version}-portable.exe"
     }
   },
   "dependencies": {

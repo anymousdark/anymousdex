@@ -35,8 +35,9 @@ presentation:
 
 ## Download
 
-Grab the installer from the [Releases](../../releases) page. Builds are unsigned,
-so Windows SmartScreen may ask for confirmation.
+Grab the single-file portable executable from the [Releases](../../releases)
+page — no installation needed. Builds are unsigned, so Windows SmartScreen may
+ask for confirmation.
 
 ## Build from source
 
