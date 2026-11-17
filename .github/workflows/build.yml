@@ -34,8 +34,13 @@ jobs:
         working-directory: src
         run: npm install --no-audit --no-fund --ignore-scripts
 
-      - name: Rebuild node-pty for Electron
-        run: npx --yes @electron/rebuild@3.6.0 -f -w node-pty
+      - name: Install prebuilt node-pty (Electron 12, win32-x64)
+        shell: pwsh
+        run: |
+          $dest = "src/node_modules/node-pty/build/Release"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Copy-Item "vendor/node-pty/win32-x64/*" $dest -Force
+          Get-ChildItem $dest | Select-Object Name, Length
 
       - name: Build installer
         run: npx electron-builder build -w -c.directories.app=src -c.publish=never
