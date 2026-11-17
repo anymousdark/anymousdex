@@ -3,7 +3,7 @@ const {app, BrowserWindow, dialog, shell} = require("electron");
 
 process.on("uncaughtException", e => {
     signale.fatal(e);
-    dialog.showErrorBox("HyperTerm UI crashed", e.message || "Cannot retrieve error message.");
+    dialog.showErrorBox("AnymousDEX crashed", e.message || "Cannot retrieve error message.");
     if (tty) {
         tty.close();
     }
@@ -17,13 +17,13 @@ process.on("uncaughtException", e => {
     process.exit(1);
 });
 
-signale.start(`Starting HyperTerm UI v${app.getVersion()}`);
+signale.start(`Starting AnymousDEX v${app.getVersion()}`);
 signale.info(`With Node ${process.versions.node} and Electron ${process.versions.electron}`);
 signale.info(`Renderer is Chrome ${process.versions.chrome}`);
 
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
-    signale.fatal("Error: Another instance of HyperTerm is already running. Cannot proceed.");
+    signale.fatal("Error: Another instance of AnymousDEX is already running. Cannot proceed.");
     app.exit(1);
 }
 
@@ -178,7 +178,7 @@ function createWindow(settings) {
     let {x, y, width, height} = display.bounds;
     width++; height++;
     win = new BrowserWindow({
-        title: "HyperTerm UI",
+        title: "AnymousDEX",
         x,
         y,
         width,
@@ -236,7 +236,7 @@ app.on('ready', async () => {
     Object.assign(cleanEnv, {
         TERM: "xterm-256color",
         COLORTERM: "truecolor",
-        TERM_PROGRAM: "HyperTerm UI",
+        TERM_PROGRAM: "AnymousDEX",
         TERM_PROGRAM_VERSION: app.getVersion()
     }, settings.env);
 

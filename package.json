@@ -1,6 +1,6 @@
 {
-  "name": "hyperterm-ui",
-  "productName": "HyperTerm UI",
+  "name": "anymousdex",
+  "productName": "AnymousDEX",
   "version": "1.0.0",
   "description": "A sci-fi terminal emulator and system monitor, forked from eDEX-UI with a Nord-first visual polish.",
   "keywords": [
@@ -32,7 +32,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anymousdark/hyperterm-ui.git"
+    "url": "git+https://github.com/anymousdark/anymousdex.git"
   },
   "author": "Gabriel 'Squared' SAILLARD <gabriel@saillard.dev> (https://gaby.dev)",
   "contributors": [
@@ -44,8 +44,8 @@
   },
   "homepage": "https://github.com/GitSquared/edex-ui#readme",
   "build": {
-    "appId": "com.hyperterm.ui",
-    "productName": "HyperTerm UI",
+    "appId": "com.anymousdex.ui",
+    "productName": "AnymousDEX",
     "publish": "github",
     "asar": true,
     "compression": "normal",
@@ -56,7 +56,7 @@
     },
     "forceCodeSigning": false,
     "npmRebuild": true,
-    "artifactName": "HyperTerm-UI-${os}-${arch}.${ext}",
+    "artifactName": "AnymousDEX-${os}-${arch}.${ext}",
     "linux": {
       "target": [
         "AppImage"
@@ -65,7 +65,7 @@
       "icon": "media/linuxIcons"
     },
     "appImage": {
-      "artifactName": "HyperTerm-UI-Linux-${arch}.AppImage"
+      "artifactName": "AnymousDEX-Linux-${arch}.AppImage"
     },
     "mac": {
       "target": [
@@ -80,7 +80,7 @@
       "icon": "media/icon.icns"
     },
     "dmg": {
-      "artifactName": "HyperTerm-UI-macOS-${arch}.dmg"
+      "artifactName": "AnymousDEX-macOS-${arch}.dmg"
     },
     "win": {
       "target": [
@@ -92,10 +92,10 @@
           ]
         }
       ],
-      "icon": "media/hyperterm.ico"
+      "icon": "media/anymousdex.ico"
     },
     "nsis": {
-      "artifactName": "HyperTerm-UI-Windows-${arch}.exe",
+      "artifactName": "AnymousDEX-Windows-${arch}.exe",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": true

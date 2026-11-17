@@ -1,8 +1,8 @@
 {
-  "name": "hyperterm-ui",
-  "productName": "HyperTerm UI",
+  "name": "anymousdex",
+  "productName": "AnymousDEX",
   "version": "1.0.0",
-  "description": "HyperTerm UI sci-fi interface",
+  "description": "AnymousDEX sci-fi interface",
   "keywords": [
     "desktop",
     "sci-fi",
@@ -14,7 +14,7 @@
   "main": "_boot.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anymousdark/hyperterm-ui.git"
+    "url": "git+https://github.com/anymousdark/anymousdex.git"
   },
   "author": "Gabriel 'Squared' SAILLARD <gabriel@saillard.dev> (https://gaby.dev)",
   "license": "GPL-3.0",

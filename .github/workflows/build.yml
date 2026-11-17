@@ -38,7 +38,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: HyperTerm-UI-Windows
+          name: AnymousDEX-Windows
           path: dist/*.exe
           if-no-files-found: error
 

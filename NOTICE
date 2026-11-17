@@ -1,4 +1,4 @@
-HyperTerm UI
+AnymousDEX
 Copyright (C) 2026 anymousdark
 
 This program is a modified version of eDEX-UI:
@@ -12,8 +12,11 @@ Upstream license: GNU General Public License v3.0.
 
 Modifications in this fork include, but are not limited to:
 
-  - rebranding (application name, icon, installer metadata, docs)
-  - a new "nord-plus" theme and visual polish
+  - rebranding: application name, icon, installer metadata, documentation
+  - removal of upstream marketing assets (sponsor banner, teaser GIF,
+    screenshots, logo)
+  - a new default "nord-plus" theme and visual polish
+  - update checker retargeted to this repository
   - an automated GitHub Actions build pipeline
 
 This program is free software: you can redistribute it and/or modify it under
