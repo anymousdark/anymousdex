@@ -92,7 +92,7 @@
           ]
         }
       ],
-      "icon": "media/anymousdex.ico"
+      "icon": "media/anymousdex.png"
     },
     "nsis": {
       "artifactName": "AnymousDEX-Windows-${arch}.exe",

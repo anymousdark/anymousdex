@@ -22,15 +22,20 @@ jobs:
         with:
           node-version: 16
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Install root dependencies
         run: npm install --no-audit --no-fund
 
       - name: Install app dependencies
         working-directory: src
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --ignore-scripts
 
-      - name: Rebuild native modules for Electron
-        run: npx electron-rebuild -f -w node-pty
+      - name: Rebuild node-pty for Electron
+        run: npx --yes @electron/rebuild@3.6.0 -f -w node-pty
 
       - name: Build installer
         run: npx electron-builder build -w -c.directories.app=src -c.publish=never
