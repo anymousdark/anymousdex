@@ -34,7 +34,7 @@
     "type": "git",
     "url": "git+https://github.com/anymousdark/anymousdex.git"
   },
-  "author": "Gabriel 'Squared' SAILLARD <gabriel@saillard.dev> (https://gaby.dev)",
+  "author": "anymousdark",
   "contributors": [
     "anymousdark"
   ],
@@ -49,7 +49,7 @@
     "publish": "github",
     "asar": true,
     "compression": "normal",
-    "copyright": "Copyright © 2017-2021 Gabriel 'Squared' SAILLARD <gabriel@saillard.dev> (https://gaby.dev)",
+    "copyright": "Copyright (c) 2026 anymousdark. Based on eDEX-UI (c) 2017-2021 Gabriel 'Squared' SAILLARD (GPL-3.0).",
     "directories": {
       "output": "dist",
       "app": "src"
