@@ -55,7 +55,7 @@
       "app": "prebuild-src"
     },
     "forceCodeSigning": false,
-    "npmRebuild": true,
+    "npmRebuild": false,
     "artifactName": "AnymousDEX-${os}-${arch}.${ext}",
     "linux": {
       "target": [
