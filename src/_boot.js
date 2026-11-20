@@ -3,7 +3,7 @@ const {app, BrowserWindow, dialog, shell} = require("electron");
 
 process.on("uncaughtException", e => {
     signale.fatal(e);
-    dialog.showErrorBox("AnymousDEX crashed", e.message || "Cannot retrieve error message.");
+    dialog.showErrorBox("anyDEXpro crashed", e.message || "Cannot retrieve error message.");
     if (tty) {
         tty.close();
     }
@@ -17,13 +17,13 @@ process.on("uncaughtException", e => {
     process.exit(1);
 });
 
-signale.start(`Starting AnymousDEX v${app.getVersion()}`);
+signale.start(`Starting anyDEXpro v${app.getVersion()}`);
 signale.info(`With Node ${process.versions.node} and Electron ${process.versions.electron}`);
 signale.info(`Renderer is Chrome ${process.versions.chrome}`);
 
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
-    signale.fatal("Error: Another instance of AnymousDEX is already running. Cannot proceed.");
+    signale.fatal("Error: Another instance of anyDEXpro is already running. Cannot proceed.");
     app.exit(1);
 }
 
@@ -37,6 +37,9 @@ const url = require("url");
 const fs = require("fs");
 const which = require("which");
 const Terminal = require("./classes/terminal.class.js").Terminal;
+
+// Keep the historical userData folder stable across product renames
+app.setPath("userData", path.join(app.getPath("appData"), "AnymousDEX"));
 
 ipc.on("log", (e, type, content) => {
     signale[type](content);
@@ -75,7 +78,7 @@ if (!fs.existsSync(settingsFile)) {
     fs.writeFileSync(settingsFile, JSON.stringify({
         shell: (process.platform === "win32") ? "powershell.exe" : "bash",
         shellArgs: '',
-        cwd: electron.app.getPath("userData"),
+        cwd: require("os").homedir(),
         keyboard: "en-US",
         theme: "nord-plus",
         termFontSize: 15,
@@ -97,25 +100,48 @@ if (!fs.existsSync(settingsFile)) {
     }, "", 4));
     signale.info(`Default settings written to ${settingsFile}`);
 }
+// Default app shortcuts
+const defaultShortcuts = [
+    { type: "app", trigger: "Ctrl+Shift+C", action: "COPY", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+V", action: "PASTE", enabled: true },
+    { type: "app", trigger: "Ctrl+Tab", action: "NEXT_TAB", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+Tab", action: "PREVIOUS_TAB", enabled: true },
+    { type: "app", trigger: "Ctrl+X", action: "TAB_X", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+S", action: "SETTINGS", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+K", action: "SHORTCUTS", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+F", action: "FUZZY_SEARCH", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+L", action: "FS_LIST_VIEW", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+H", action: "FS_DOTFILES", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+P", action: "KB_PASSMODE", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+E", action: "TEXT_EDITOR", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+B", action: "WEB_BROWSER", enabled: true },
+    { type: "app", trigger: "Ctrl+Shift+I", action: "DEV_DEBUG", enabled: false },
+    { type: "app", trigger: "Ctrl+Shift+F5", action: "DEV_RELOAD", enabled: true },
+    { type: "shell", trigger: "Ctrl+Shift+Alt+Space", action: "neofetch", linebreak: true, enabled: false }
+];
+
 // Create default shortcuts file
 if (!fs.existsSync(shortcutsFile)) {
-    fs.writeFileSync(shortcutsFile, JSON.stringify([
-        { type: "app", trigger: "Ctrl+Shift+C", action: "COPY", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+V", action: "PASTE", enabled: true },
-        { type: "app", trigger: "Ctrl+Tab", action: "NEXT_TAB", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+Tab", action: "PREVIOUS_TAB", enabled: true },
-        { type: "app", trigger: "Ctrl+X", action: "TAB_X", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+S", action: "SETTINGS", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+K", action: "SHORTCUTS", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+F", action: "FUZZY_SEARCH", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+L", action: "FS_LIST_VIEW", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+H", action: "FS_DOTFILES", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+P", action: "KB_PASSMODE", enabled: true },
-        { type: "app", trigger: "Ctrl+Shift+I", action: "DEV_DEBUG", enabled: false },
-        { type: "app", trigger: "Ctrl+Shift+F5", action: "DEV_RELOAD", enabled: true },
-        { type: "shell", trigger: "Ctrl+Shift+Alt+Space", action: "neofetch", linebreak: true, enabled: false }
-    ], "", 4));
+    fs.writeFileSync(shortcutsFile, JSON.stringify(defaultShortcuts, "", 4));
     signale.info(`Default keymap written to ${shortcutsFile}`);
+} else {
+    // Add shortcuts introduced by updates without touching user customizations
+    try {
+        const existing = JSON.parse(fs.readFileSync(shortcutsFile, "utf8"));
+        const added = [];
+        defaultShortcuts.forEach(def => {
+            if (!existing.some(cut => cut.type === def.type && cut.action === def.action)) {
+                existing.push(def);
+                added.push(def.action);
+            }
+        });
+        if (added.length > 0) {
+            fs.writeFileSync(shortcutsFile, JSON.stringify(existing, "", 4));
+            signale.info(`Added new default shortcuts: ${added.join(", ")}`);
+        }
+    } catch (e) {
+        signale.error("Could not merge default shortcuts:", e.message);
+    }
 }
 //Create default window state file
 if(!fs.existsSync(lastWindowStateFile)) {
@@ -152,6 +178,27 @@ fs.readdirSync(innerFontsDir).forEach(e => {
     fs.writeFileSync(path.join(fontsDir, e), fs.readFileSync(path.join(innerFontsDir, e)));
 });
 
+// Remove legacy themes and fonts left by older versions, without touching user files
+const legacyThemes = [
+    "apollo-notype.json", "apollo.json", "blade.json", "chalkboard-ligatures.json",
+    "chalkboard-notype.json", "chalkboard.json", "cyborg-focus.json", "cyborg.json",
+    "interstellar.json", "navy-disrupted.json", "navy-notype.json", "navy.json",
+    "nord.json", "red.json", "tron-colorfilter.json", "tron-disrupted.json",
+    "tron-fulltype.json", "tron-notype.json", "tron-typeleft.json", "tron.json"
+];
+legacyThemes.forEach(name => {
+    const file = path.join(themesDir, name);
+    if (fs.existsSync(file) && !fs.existsSync(path.join(innerThemesDir, name))) {
+        try { fs.unlinkSync(file); } catch (e) {}
+    }
+});
+["united_sans_light.woff2", "united_sans_medium.woff2"].forEach(name => {
+    const file = path.join(fontsDir, name);
+    if (fs.existsSync(file) && !fs.existsSync(path.join(innerFontsDir, name))) {
+        try { fs.unlinkSync(file); } catch (e) {}
+    }
+});
+
 // Version history logging
 const versionHistoryPath = path.join(electron.app.getPath("userData"), "versions_log.json");
 var versionHistory = fs.existsSync(versionHistoryPath) ? require(versionHistoryPath) : {};
@@ -178,7 +225,7 @@ function createWindow(settings) {
     let {x, y, width, height} = display.bounds;
     width++; height++;
     win = new BrowserWindow({
-        title: "AnymousDEX",
+        title: "anyDEXpro",
         x,
         y,
         width,
@@ -194,10 +241,12 @@ function createWindow(settings) {
             devTools: true,
 	    enableRemoteModule: true,
             contextIsolation: false,
-            backgroundThrottling: false,
+            backgroundThrottling: true,
+            additionalArguments: ["--anyDEXpro-port=" + (settings.port || 3000)],
             webSecurity: true,
             nodeIntegration: true,
             nodeIntegrationInSubFrames: false,
+            webviewTag: true,
             allowRunningInsecureContent: false,
             experimentalFeatures: settings.experimentalFeatures || false
         }
@@ -220,9 +269,48 @@ function createWindow(settings) {
     signale.watch("Waiting for frontend connection...");
 }
 
+// Find the next port that can be bound, so a busy port never crashes the app
+function findFreePort(startPort, maxAttempts = 25) {
+    return new Promise((resolve, reject) => {
+        let port = Number(startPort) || 3000;
+        let attempts = 0;
+        const attempt = () => {
+            const server = require("net").createServer();
+            server.unref();
+            server.once("error", err => {
+                server.close(() => {});
+                if (err.code === "EADDRINUSE" && attempts < maxAttempts) {
+                    attempts++;
+                    port++;
+                    attempt();
+                } else {
+                    reject(err);
+                }
+            });
+            server.once("listening", () => {
+                server.close(() => resolve(port));
+            });
+            server.listen(port);
+        };
+        attempt();
+    });
+}
+
 app.on('ready', async () => {
     signale.pending(`Loading settings file...`);
     let settings = require(settingsFile);
+    // Older builds started the shell inside the config folder; open the user profile instead.
+    if (!settings.cwd || path.resolve(settings.cwd) === path.resolve(electron.app.getPath("userData"))) {
+        settings.cwd = require("os").homedir();
+        try {
+            const raw = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
+            raw.cwd = settings.cwd;
+            fs.writeFileSync(settingsFile, JSON.stringify(raw, "", 4));
+            signale.info(`Migrated terminal cwd to ${settings.cwd}`);
+        } catch (e) {
+            signale.warn("Could not persist cwd migration:", e.message);
+        }
+    }
     signale.pending(`Resolving shell path...`);
     settings.shell = await which(settings.shell).catch(e => { throw(e) });
     signale.info(`Shell found at ${settings.shell}`);
@@ -230,13 +318,18 @@ app.on('ready', async () => {
 
     if (!require("fs").existsSync(settings.cwd)) throw new Error("Configured cwd path does not exist.");
 
+    // Pick a free port for the terminal server instead of crashing on a conflict
+    signale.pending(`Selecting a free terminal port...`);
+    settings.port = await findFreePort(settings.port || 3000);
+    signale.info(`Terminal server will use port ${settings.port}`);
+
     // See #366
     let cleanEnv = await require("shell-env")(settings.shell).catch(e => { throw e; });
 
     Object.assign(cleanEnv, {
         TERM: "xterm-256color",
         COLORTERM: "truecolor",
-        TERM_PROGRAM: "AnymousDEX",
+        TERM_PROGRAM: "anyDEXpro",
         TERM_PROGRAM_VERSION: app.getVersion()
     }, settings.env);
 
@@ -275,11 +368,11 @@ app.on('ready', async () => {
 
     // Support for more terminals, used for creating tabs (currently limited to 4 extra terms)
     extraTtys = {};
-    let basePort = settings.port || 3000;
-    basePort = Number(basePort) + 2;
-
+    let candidatePort = Number(settings.port || 3000) + 2;
     for (let i = 0; i < 4; i++) {
-        extraTtys[basePort+i] = null;
+        const freePort = await findFreePort(candidatePort);
+        extraTtys[freePort] = null;
+        candidatePort = freePort + 1;
     }
 
     ipc.on("ttyspawn", (e, arg) => {
@@ -347,6 +440,10 @@ app.on('ready', async () => {
 });
 
 app.on('web-contents-created', (e, contents) => {
+    // The embedded browser's guest is allowed to navigate. It never gets Node.js access,
+    // and popups are handled by the renderer (or opened externally as a fallback).
+    if (contents.getType() === "webview") return;
+
     // Prevent creating more than one window
     contents.on('new-window', (e, url) => {
         e.preventDefault();

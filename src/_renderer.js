@@ -53,6 +53,10 @@ window.settings = require(settingsFile);
 window.shortcuts = require(shortcutsFile);
 window.lastWindowState = require(lastWindowStateFile);
 
+// The main process may move the terminal server to a free port
+const portArg = process.argv.find(arg => arg.startsWith("--anyDEXpro-port="));
+if (portArg) window.settings.port = Number(portArg.split("=")[1]);
+
 // Load CLI parameters
 if (remote.process.argv.includes("--nointro")) {
     window.settings.nointroOverride = true;
@@ -140,14 +144,14 @@ window._loadTheme = theme => {
 };
 
 function initGraphicalErrorHandling() {
-    window.edexErrorsModals = [];
+    window.anymousdexErrorsModals = [];
     window.onerror = (msg, path, line, col, error) => {
         let errorModal = new Modal({
             type: "error",
             title: error,
             message: `${msg}<br/>        at ${path}  ${line}:${col}`
         });
-        window.edexErrorsModals.push(errorModal);
+        window.anymousdexErrorsModals.push(errorModal);
 
         ipc.send("log", "error", `${error}: ${msg}`);
         ipc.send("log", "debug", `at ${path} ${line}:${col}`);
@@ -212,7 +216,7 @@ if (window.settings.nointro || window.settings.nointroOverride) {
     initSystemInformationProxy();
     document.getElementById("boot_screen").remove();
     document.body.setAttribute("class", "");
-    waitForFonts().then(initUI);
+    waitForFonts().then(initCleanUI).catch(handleInitError);
 } else {
     displayLine();
 }
@@ -243,7 +247,7 @@ function displayLine() {
 
     switch(true) {
         case i === 2:
-            bootScreen.innerHTML += `AnymousDEX Kernel version ${electron.remote.app.getVersion()} boot at ${Date().toString()}; root:xnu-1699.22.73~1/RELEASE_X86_64`;
+            bootScreen.innerHTML += `anyDEXpro Kernel version ${electron.remote.app.getVersion()} boot at ${Date().toString()}; root:xnu-1699.22.73~1/RELEASE_X86_64`;
         case i === 4:
             setTimeout(displayLine, 500);
             break;
@@ -288,7 +292,7 @@ async function displayTitleScreen() {
 
     document.body.setAttribute("class", "");
     bootScreen.setAttribute("class", "center");
-    bootScreen.innerHTML = "<h1>AnymousDEX</h1>";
+    bootScreen.innerHTML = "<h1>anyDEXpro</h1>";
     let title = document.querySelector("section > h1");
 
     await _delay(200);
@@ -323,8 +327,26 @@ async function displayTitleScreen() {
     initSystemInformationProxy();
     waitForFonts().then(() => {
         bootScreen.remove();
-        initUI();
-    });
+        initCleanUI();
+    }).catch(handleInitError);
+}
+
+// Surface async startup failures instead of leaving a half-built interface
+function handleInitError(err) {
+    const detail = (err && err.stack) ? err.stack : String(err);
+    console.error("UI startup failed", err);
+    try {
+        ipc.send("log", "error", `UI startup failed: ${detail}`);
+    } catch (e) {}
+    try {
+        new Modal({
+            type: "error",
+            title: "UI startup failed",
+            message: window._escapeHtml(detail).replace(/\n/g, "<br/>")
+        });
+    } catch (e) {
+        alert("UI startup failed:\n" + detail);
+    }
 }
 
 // Returns the user's desired display name
@@ -342,6 +364,14 @@ async function getDisplayName() {
 
 // Create the UI's html structure and initialize the terminal client and the keyboard
 async function initUI() {
+    // Clean desktop session: wallpaper + panel + application windows
+    document.body.classList.add("xde-clean-desktop");
+    try {
+        document.body.classList.toggle("xde-kb-hidden", localStorage.getItem("xde.keyboard.visible") !== "1");
+    } catch (e) {
+        document.body.classList.add("xde-kb-hidden");
+    }
+
     document.body.innerHTML += `<section class="mod_column" id="mod_column_left">
         <h3 class="title"><p>PANEL</p><p>SYSTEM</p></h3>
     </section>
@@ -458,12 +488,32 @@ async function initUI() {
     // Initialize the terminal
     let shellContainer = document.getElementById("main_shell");
     shellContainer.innerHTML += `
+        <div id="main_shell_titlebar">
+            <div class="xde-window-id">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M6.5 9l3 3-3 3"/><path d="M12 15.5h5"/></svg>
+                <strong>Terminal</strong>
+                <small id="main_shell_title_sub">PowerShell</small>
+            </div>
+            <div class="xde-win-controls">
+                <button type="button" class="xde-win-btn" id="win_term_min" data-win="min" data-for="terminal" title="Minimize terminal">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2 5.2h6"/></svg>
+                </button>
+                <button type="button" class="xde-win-btn" id="win_term_max" data-win="max" data-for="terminal" title="Maximize terminal">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="2.1" y="2.1" width="5.8" height="5.8" rx="0.7"/></svg>
+                </button>
+                <button type="button" class="xde-win-btn close" id="win_term_close" data-win="close" data-for="terminal" title="Close terminal window">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2.4 2.4l5.2 5.2M7.6 2.4L2.4 7.6"/></svg>
+                </button>
+            </div>
+        </div>
         <ul id="main_shell_tabs">
             <li id="shell_tab0" onclick="window.focusShellTab(0);" class="active"><p>MAIN SHELL</p></li>
             <li id="shell_tab1" onclick="window.focusShellTab(1);"><p>EMPTY</p></li>
             <li id="shell_tab2" onclick="window.focusShellTab(2);"><p>EMPTY</p></li>
             <li id="shell_tab3" onclick="window.focusShellTab(3);"><p>EMPTY</p></li>
             <li id="shell_tab4" onclick="window.focusShellTab(4);"><p>EMPTY</p></li>
+            <li id="shell_tab_editor" title="Open the built-in text editor (Ctrl+Shift+E)" onclick="window.useAppShortcut('TEXT_EDITOR');"><p>EDITOR</p></li>
+            <li id="shell_tab_web" title="Open the embedded browser (Ctrl+Shift+B)" onclick="window.useAppShortcut('WEB_BROWSER');"><p>WEB</p></li>
         </ul>
         <div id="main_shell_innercontainer">
             <pre id="terminal0" class="active"></pre>
@@ -482,12 +532,16 @@ async function initUI() {
     window.currentTerm = 0;
     window.term[0].onprocesschange = p => {
         document.getElementById("shell_tab0").innerHTML = `<p>MAIN - ${p}</p>`;
+        const sub = document.getElementById("main_shell_title_sub");
+        if (sub) sub.textContent = p;
     };
     // Prevent losing hardware keyboard focus on the terminal when using touch keyboard
     window.onmouseup = e => {
-        if (window.keyboard.linkedToTerm) window.term[window.currentTerm].term.focus();
+        if (!window.keyboard.linkedToTerm) return;
+        if (e.target.closest && e.target.closest("#xde_taskbar, #xde_menu, #xde_desktop, #textEditorOverlay, #browserOverlay, #settingsOverlay, #xde_lock, .modal_popup")) return;
+        window.term[window.currentTerm].term.focus();
     };
-    window.term[0].term.writeln("\033[1m"+`Welcome to AnymousDEX v${electron.remote.app.getVersion()} - Electron v${process.versions.electron}`+"\033[0m");
+    window.term[0].term.writeln("\033[1m"+`Welcome to anyDEXpro v${electron.remote.app.getVersion()} - Electron v${process.versions.electron}`+"\033[0m");
 
     await _delay(100);
 
@@ -507,6 +561,157 @@ async function initUI() {
     await _delay(200);
 
     window.updateCheck = new UpdateChecker();
+
+    // XFCE-inspired shell: panel, start menu, desktop and pointer
+    const themeList = [];
+    try {
+        fs.readdirSync(themesDir).filter(file => file.endsWith(".json")).forEach(file => {
+            try {
+                const theme = require(path.join(themesDir, file));
+                themeList.push({
+                    name: path.basename(file, ".json"),
+                    color: `rgb(${theme.colors.r}, ${theme.colors.g}, ${theme.colors.b})`
+                });
+            } catch (e) {}
+        });
+    } catch (e) {}
+    window.desktopShell = new DesktopShell({
+        themes: themeList,
+        version: electron.remote.app.getVersion()
+    }).mount();
+
+    // Preferences application: a real window for the desktop session
+    window.settingsApp = new SettingsApp({
+        themes: themeList,
+        version: electron.remote.app.getVersion()
+    });
+    SettingsApp.applyPreferences();
+}
+
+// anyDEXpro desktop, built from scratch: wallpaper, panel and application windows.
+async function initCleanUI() {
+    document.body.classList.add("xde-clean-desktop");
+    try {
+        document.body.classList.toggle("xde-kb-hidden", localStorage.getItem("xde.keyboard.visible") !== "1");
+    } catch (e) {
+        document.body.classList.add("xde-kb-hidden");
+    }
+
+    // The theme is fetched over IPC; the desktop needs it before creating xterm.
+    for (let attempt = 0; attempt < 80 && !window.theme; attempt++) {
+        await _delay(50);
+    }
+    if (!window.theme) {
+        _loadTheme(require(path.join(themesDir, window.settings.theme + ".json")));
+    }
+
+    document.body.innerHTML += `
+    <section id="main_shell" class="xde-window">
+        <div id="main_shell_titlebar" data-drag="terminal">
+            <div class="xde-window-id">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M6.5 9l3 3-3 3"/><path d="M12 15.5h5"/></svg>
+                <strong>Terminal</strong>
+                <small id="main_shell_title_sub">PowerShell</small>
+            </div>
+            <div class="xde-win-controls">
+                <button type="button" class="xde-win-btn" id="win_term_min" data-win="min" data-for="terminal" title="Minimize terminal">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2 5.2h6"/></svg>
+                </button>
+                <button type="button" class="xde-win-btn" id="win_term_max" data-win="max" data-for="terminal" title="Maximize terminal">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="2.1" y="2.1" width="5.8" height="5.8" rx="0.7"/></svg>
+                </button>
+                <button type="button" class="xde-win-btn close" id="win_term_close" data-win="close" data-for="terminal" title="Close terminal window">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M2.4 2.4l5.2 5.2M7.6 2.4L2.4 7.6"/></svg>
+                </button>
+            </div>
+        </div>
+        <ul id="main_shell_tabs">
+            <li id="shell_tab0" onclick="window.focusShellTab(0);" class="active" title="Main terminal"><p>MAIN</p></li>
+            <li id="shell_tab1" onclick="window.focusShellTab(1);" title="New terminal tab"><p>EMPTY</p></li>
+            <li id="shell_tab2" onclick="window.focusShellTab(2);" title="New terminal tab"><p>EMPTY</p></li>
+            <li id="shell_tab3" onclick="window.focusShellTab(3);" title="New terminal tab"><p>EMPTY</p></li>
+            <li id="shell_tab4" onclick="window.focusShellTab(4);" title="New terminal tab"><p>EMPTY</p></li>
+            <li id="shell_tab_editor" title="Open the text editor (Ctrl+Shift+E)" onclick="window.useAppShortcut('TEXT_EDITOR');"><p>EDITOR</p></li>
+            <li id="shell_tab_web" title="Open the browser (Ctrl+Shift+B)" onclick="window.useAppShortcut('WEB_BROWSER');"><p>WEB</p></li>
+        </ul>
+        <div id="main_shell_innercontainer">
+            <pre id="terminal0" class="active"></pre>
+            <pre id="terminal1"></pre>
+            <pre id="terminal2"></pre>
+            <pre id="terminal3"></pre>
+            <pre id="terminal4"></pre>
+        </div>
+    </section>
+    <section id="filesystem" class="xde-window files-window ${window.settings.hideDotfiles ? "hideDotfiles" : ""} ${window.settings.fsListView ? "list-view" : ""}"></section>
+    <section id="keyboard"></section>`;
+
+    window.mods = {};
+
+    window.keyboard = new Keyboard({
+        layout: path.join(keyboardsDir, settings.keyboard + ".json"),
+        container: "keyboard"
+    });
+
+    await _delay(80);
+
+    window.term = {
+        0: new Terminal({
+            role: "client",
+            parentId: "terminal0",
+            port: window.settings.port || 3000
+        })
+    };
+    window.currentTerm = 0;
+
+    window.term[0].onprocesschange = p => {
+        const tab = document.getElementById("shell_tab0");
+        if (tab) tab.innerHTML = `<p>${p}</p>`;
+        const sub = document.getElementById("main_shell_title_sub");
+        if (sub) sub.textContent = p;
+    };
+    window.term[0].term.writeln("\033[1m" + `Welcome to anyDEXpro v${electron.remote.app.getVersion()} - Electron v${process.versions.electron}` + "\033[0m");
+
+    window.onmouseup = e => {
+        if (!window.keyboard || !window.keyboard.linkedToTerm) return;
+        if (e.target.closest && e.target.closest("#xde_taskbar, #xde_menu, #xde_desktop, #xde_desktop_icons, #main_shell_titlebar, #main_shell_tabs, #textEditorOverlay, #browserOverlay, #settingsOverlay, #xde_lock, #filesystem, .modal_popup")) return;
+        try {
+            window.term[window.currentTerm].term.focus();
+        } catch (err) {}
+    };
+
+    await _delay(80);
+
+    window.fsDisp = new FilesystemDisplay({
+        parentId: "filesystem"
+    });
+
+    const themeList = [];
+    try {
+        fs.readdirSync(themesDir).filter(file => file.endsWith(".json")).forEach(file => {
+            try {
+                const theme = require(path.join(themesDir, file));
+                themeList.push({
+                    name: path.basename(file, ".json"),
+                    color: `rgb(${theme.colors.r}, ${theme.colors.g}, ${theme.colors.b})`
+                });
+            } catch (e) {}
+        });
+    } catch (e) {}
+
+    window.desktopShell = new DesktopShell({
+        themes: themeList,
+        version: electron.remote.app.getVersion()
+    }).mount();
+
+    window.settingsApp = new SettingsApp({
+        themes: themeList,
+        version: electron.remote.app.getVersion()
+    });
+    SettingsApp.applyPreferences();
+
+    try {
+        window.term[0].resendCWD();
+    } catch (e) {}
 }
 
 window.themeChanger = theme => {
@@ -545,7 +750,7 @@ window.focusShellTab = number => {
         window.term[number].term.focus();
         window.term[number].resendCWD();
 
-        window.fsDisp.followTab();
+        if (window.fsDisp) window.fsDisp.followTab();
     } else if (number > 0 && number <= 4 && window.term[number] !== null && typeof window.term[number] !== "object") {
         window.term[number] = null;
 
@@ -607,8 +812,9 @@ window.openSettings = async () => {
         if (i !== window.settings.monitor) monitors += `<option>${i}</option>`;
     }
     let nets = await window.si.networkInterfaces();
+    const currentIface = (window.mods && window.mods.netstat) ? window.mods.netstat.iface : "";
     nets.forEach(net => {
-        if (net.iface !== window.mods.netstat.iface) ifaces += `<option>${net.iface}</option>`;
+        if (net.iface !== currentIface) ifaces += `<option>${net.iface}</option>`;
     });
 
     // Unlink the tactile keyboard from the terminal emulator to allow filling in the settings fields
@@ -735,7 +941,7 @@ window.openSettings = async () => {
                         <td>iface</td>
                         <td>Override the interface used for network monitoring</td>
                         <td><select id="settingsEditor-iface">
-                            <option>${window.mods.netstat.iface}</option>
+                            <option>${currentIface || "auto"}</option>
                             ${ifaces}
                         </select></td>
                     </tr>
@@ -802,7 +1008,7 @@ window.openSettings = async () => {
             {label: "Open in External Editor", action:`electron.shell.openPath('${settingsFile}');electronWin.minimize();`},
             {label: "Save to Disk", action: "window.writeSettingsFile()"},
             {label: "Reload UI", action: "window.location.reload(true);"},
-            {label: "Restart AnymousDEX", action: "electron.remote.app.relaunch();electron.remote.app.quit();"}
+            {label: "Restart anyDEXpro", action: "electron.remote.app.relaunch();electron.remote.app.quit();"}
         ]
     }, () => {
         // Link the keyboard back to the terminal
@@ -885,6 +1091,8 @@ window.openShortcutsHelp = () => {
         "FS_LIST_VIEW": "Toggle between list and grid view in the file browser.",
         "FS_DOTFILES": "Toggle hidden files and directories in the file browser.",
         "KB_PASSMODE": "Toggle the on-screen keyboard's \"Password Mode\", which allows you to safely<br>type sensitive information even if your screen might be recorded (disable visual input feedback).",
+        "TEXT_EDITOR": "Open the built-in text editor to read and write files without leaving anyDEXpro.",
+        "WEB_BROWSER": "Open the embedded web browser, with its own sandboxed session.",
         "DEV_DEBUG": "Open Chromium Dev Tools, for debugging purposes.",
         "DEV_RELOAD": "Trigger front-end hot reload."
     };
@@ -1014,7 +1222,8 @@ window.useAppShortcut = action => {
             window.focusShellTab(4);
             return true;
         case "SETTINGS":
-            window.openSettings();
+            if (window.settingsApp) window.settingsApp.toggle();
+            else window.openSettings();
             return true;
         case "SHORTCUTS":
             window.openShortcutsHelp();
@@ -1030,6 +1239,14 @@ window.useAppShortcut = action => {
             return true;
         case "KB_PASSMODE":
             window.keyboard.togglePasswordMode();
+            return true;
+        case "TEXT_EDITOR":
+            if (!window.textEditor) window.textEditor = new TextEditor();
+            window.textEditor.toggle();
+            return true;
+        case "WEB_BROWSER":
+            if (!window.browser) window.browser = new EmbeddedBrowser();
+            window.browser.toggle();
             return true;
         case "DEV_DEBUG":
             electron.remote.getCurrentWindow().webContents.toggleDevTools();
@@ -1085,7 +1302,9 @@ window.addEventListener("blur", () => {
 });
 
 // Prevent showing menu, exiting fullscreen or app with keyboard shortcuts
+// (never interfere with text fields inside the built-in editor)
 document.addEventListener("keydown", e => {
+    if (e.target && e.target.closest && e.target.closest("#textEditorOverlay")) return;
     if (e.key === "Alt") {
         e.preventDefault();
     }

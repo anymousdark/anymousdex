@@ -109,7 +109,7 @@ class Terminal {
                 fontWeightBold: window.theme.terminal.fontWeightBold || "bold",
                 letterSpacing: window.theme.terminal.letterSpacing || 0,
                 lineHeight: window.theme.terminal.lineHeight || 1,
-                scrollback: 1500,
+                scrollback: 1000,
                 bellStyle: "none",
                 theme: {
                     foreground: window.theme.terminal.foreground,
@@ -207,9 +207,11 @@ class Terminal {
                 let ips = e.data.match(/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/g);
                 if (ips !== null && ips.length >= 1) {
                     ips = ips.filter((val, index, self) => { return self.indexOf(val) === index; });
-                    ips.forEach(ip => {
-                        window.mods.globe.addTemporaryConnectedMarker(ip);
-                    });
+                    if (window.mods && window.mods.globe) {
+                        ips.forEach(ip => {
+                            window.mods.globe.addTemporaryConnectedMarker(ip);
+                        });
+                    }
                 }
             });
 
@@ -314,7 +316,7 @@ class Terminal {
             this.onresize = () => {};
             this.ondisconnected = () => {};
 
-            this._disableCWDtracking = false;
+            this._disableCWDtracking = (process.platform === "win32");
             this._getTtyCWD = tty => {
                 return new Promise((resolve, reject) => {
                     let pid = tty._pid;
@@ -357,7 +359,13 @@ class Terminal {
                             });
                             break;
                         default:
-                            reject("Unsupported OS");
+                            if (process.platform === "win32") {
+                                // Windows exposes no portable way to read a child's foreground process.
+                                // Report the shell itself instead of failing on every output chunk.
+                                resolve(require("path").basename(opts.shell || "shell"));
+                            } else {
+                                reject("Unsupported OS");
+                            }
                     }
                 });
             };

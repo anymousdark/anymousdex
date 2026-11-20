@@ -10,7 +10,7 @@ class FilesystemDisplay {
         this._formatBytes = (a,b) => {if(0==a)return"0 Bytes";var c=1024,d=b||2,e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]};
         this.fileIconsMatcher = require("./assets/misc/file-icons-match.js");
         this.icons = require("./assets/icons/file-icons.json");
-        this.edexIcons = {
+        this.anyDEXproIcons = {
             theme: {
                 width: 24,
                 height: 24,
@@ -154,11 +154,20 @@ class FilesystemDisplay {
             if (this.failed === true || this._reading) return false;
             this._reading = true;
 
+            // Terminal CWD tracking on Windows reports a fallback prefix; strip it.
+            if (typeof dir === "string" && dir.startsWith("FALLBACK |-- ")) {
+                dir = dir.slice(13);
+                this._noTracking = true;
+            }
+            if (typeof dir !== "string" || !dir) dir = window.settings.cwd;
+
             document.getElementById("fs_disp_title_dir").innerText = this.dirpath;
             this.filesContainer.setAttribute("class", "");
             this.filesContainer.innerHTML = "";
             if (this._noTracking) {
-                document.querySelector("section#filesystem > h3.title > p:first-of-type").innerText = "FILESYSTEM - TRACKING FAILED, RUNNING DETACHED FROM TTY";
+                const fsTitle = document.querySelector("section#filesystem > h3.title > p:first-of-type");
+                fsTitle.innerText = "FILESYSTEM";
+                fsTitle.title = "Automatic folder tracking is unavailable on this system. Use the file browser to navigate.";
             }
 
             if (process.platform === "win32" && dir.endsWith(":")) dir = dir+"\\";
@@ -204,8 +213,8 @@ class FilesystemDisplay {
                             e.category = "dir";
                             e.type = "dir";
                         }
-                        if (e.category === "dir" && tcwd === settingsDir && file === "themes") e.type="edex-themesDir";
-                        if (e.category === "dir" && tcwd === settingsDir && file === "keyboards") e.type = "edex-kblayoutsDir";
+                        if (e.category === "dir" && tcwd === settingsDir && file === "themes") e.type="anyDEXpro-themesDir";
+                        if (e.category === "dir" && tcwd === settingsDir && file === "keyboards") e.type = "anyDEXpro-kblayoutsDir";
 
                         if (fstat.isSymbolicLink()) {
                             e.category = "symlink";
@@ -222,10 +231,10 @@ class FilesystemDisplay {
                         e.hidden = true;
                     }
 
-                    if (e.category === "file" && tcwd === themesDir && file.endsWith(".json")) e.type = "edex-theme";
-                    if (e.category === "file" && tcwd === keyboardsDir && file.endsWith(".json")) e.type = "edex-kblayout";
-                    if (e.category === "file" && tcwd === settingsDir && file === "settings.json") e.type = "edex-settings";
-                    if (e.category === "file" && tcwd === settingsDir && file === "shortcuts.json") e.type = "edex-shortcuts";
+                    if (e.category === "file" && tcwd === themesDir && file.endsWith(".json")) e.type = "anyDEXpro-theme";
+                    if (e.category === "file" && tcwd === keyboardsDir && file.endsWith(".json")) e.type = "anyDEXpro-kblayout";
+                    if (e.category === "file" && tcwd === settingsDir && file === "settings.json") e.type = "anyDEXpro-settings";
+                    if (e.category === "file" && tcwd === settingsDir && file === "shortcuts.json") e.type = "anyDEXpro-shortcuts";
 
                     if (file.startsWith(".")) e.hidden = true;
 
@@ -301,7 +310,9 @@ class FilesystemDisplay {
                 this.filesContainer.setAttribute("class", "");
             }
             if (this._noTracking) {
-                document.querySelector("section#filesystem > h3.title > p:first-of-type").innerText = "FILESYSTEM - TRACKING FAILED, RUNNING DETACHED FROM TTY";
+                const fsTitle = document.querySelector("section#filesystem > h3.title > p:first-of-type");
+                fsTitle.innerText = "FILESYSTEM";
+                fsTitle.title = "Automatic folder tracking is unavailable on this system. Use the file browser to navigate.";
             }
 
             let filesDOM = ``;
@@ -366,16 +377,16 @@ class FilesystemDisplay {
                     cmdSuffix = '';
                 }
 
-                if (e.type === "edex-theme") {
+                if (e.type === "anyDEXpro-theme") {
                     cmd = `window.themeChanger("${e.name.slice(0, -5)}")`;
                 }
-                if (e.type === "edex-kblayout") {
+                if (e.type === "anyDEXpro-kblayout") {
                     cmd = `window.remakeKeyboard("${e.name.slice(0, -5)}")`;
                 }
-                if (e.type === "edex-settings") {
+                if (e.type === "anyDEXpro-settings") {
                     cmd = `window.openSettings()`;
                 }
-                if (e.type === "edex-shortcuts") {
+                if (e.type === "anyDEXpro-shortcuts") {
                     cmd = `window.openShortcutsHelp()`;
                 }
 
@@ -404,29 +415,29 @@ class FilesystemDisplay {
                     case "usb":
                         icon = this.icons.usb;
                         break;
-                    case "edex-theme":
-                        icon = this.edexIcons.theme;
-                        type = "eDEX-UI theme";
+                    case "anyDEXpro-theme":
+                        icon = this.anyDEXproIcons.theme;
+                        type = "anyDEXpro theme";
                         break;
-                    case "edex-kblayout":
-                        icon = this.edexIcons.kblayout;
-                        type = "eDEX-UI keyboard layout";
+                    case "anyDEXpro-kblayout":
+                        icon = this.anyDEXproIcons.kblayout;
+                        type = "anyDEXpro keyboard layout";
                         break;
-                    case "edex-settings":
-                    case "edex-shortcuts":
-                        icon = this.edexIcons.settings;
-                        type = "eDEX-UI config file";
+                    case "anyDEXpro-settings":
+                    case "anyDEXpro-shortcuts":
+                        icon = this.anyDEXproIcons.settings;
+                        type = "anyDEXpro config file";
                         break;
                     case "system":
-                        icon = this.edexIcons.settings;
+                        icon = this.anyDEXproIcons.settings;
                         break;
-                    case "edex-themesDir":
-                        icon = this.edexIcons.themesDir;
-                        type = "eDEX-UI themes folder";
+                    case "anyDEXpro-themesDir":
+                        icon = this.anyDEXproIcons.themesDir;
+                        type = "anyDEXpro themes folder";
                         break;
-                    case "edex-kblayoutsDir":
-                        icon = this.edexIcons.kblayoutsDir;
-                        type = "eDEX-UI keyboards folder";
+                    case "anyDEXpro-kblayoutsDir":
+                        icon = this.anyDEXproIcons.kblayoutsDir;
+                        type = "anyDEXpro keyboards folder";
                         break;
                     default:
                         let iconName = this.fileIconsMatcher(e.name);
@@ -543,7 +554,12 @@ class FilesystemDisplay {
         // ...except if we're hot-reloading, in which case this can mess up the rendering
         // See #392
         if (window.performance.navigation.type === 0) {
-            this.readFS(window.term[window.currentTerm].cwd || window.settings.cwd);
+            let initialCwd = (window.term[window.currentTerm] && window.term[window.currentTerm].cwd) || window.settings.cwd;
+            if (typeof initialCwd === "string" && initialCwd.startsWith("FALLBACK |-- ")) {
+                initialCwd = initialCwd.slice(13);
+                this._noTracking = true;
+            }
+            this.readFS(initialCwd);
         }
 
         this.openFile = (name, path, type) => { //Might add text formatting at some point, not now though - Surge
@@ -605,33 +621,11 @@ class FilesystemDisplay {
                     break;
                 default:
                     if (mime.charset(filetype) === "UTF-8") {
-                        fs.readFile(block.path, 'utf-8', (err, data) => {
-                            if (err) {
-                                new Modal({
-                                    type: "info",
-                                    title: "Failed to load file: " + block.path,
-                                    html: err
-                                });
-                                console.log(err);
-                            };
-                            window.keyboard.detach();
-                            new Modal(
-                                {
-                                    type: "custom",
-                                    title: _escapeHtml(name),
-                                    html: `<textarea id="fileEdit" rows="40" cols="150" spellcheck="false">${data}</textarea><p id="fedit-status"></p>`,
-                                    buttons: [
-                                        {label:"Save to Disk",action:`window.writeFile('${block.path}')`}
-                                    ]
-                                }, () => {
-                                    window.keyboard.attach();
-                                    window.term[window.currentTerm].term.focus();
-                                }
-                            );
-                        });
-                   break;
+                        if (!window.textEditor) window.textEditor = new TextEditor();
+                        window.textEditor.open(block.path);
+                    }
+                    break;
                 }
-            }
         };
 
         this.openMedia = (name, path, type) => {

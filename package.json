@@ -1,8 +1,8 @@
 {
   "name": "anymousdex",
-  "productName": "AnymousDEX",
-  "version": "1.0.0",
-  "description": "A sci-fi terminal emulator and system monitor, forked from eDEX-UI with a Nord-first visual polish.",
+  "productName": "anyDEXpro",
+  "version": "1.2.0",
+  "description": "anyDEXpro - an XFCE-inspired terminal workspace with a text editor and embedded browser.",
   "keywords": [
     "desktop",
     "sci-fi",
@@ -28,7 +28,8 @@
     "postbuild-windows": "rmdir /S /Q prebuild-src",
     "test": "rsync -a --info=progress2 src/ prebuild-src --exclude node_modules && node prebuild-minify.js && cd prebuild-src && npm install && snyk test && cd .. && rm -R prebuild-src",
     "init-file-icons": "git submodule update --init",
-    "update-file-icons": "git submodule foreach git pull origin master && node file-icons-generator.js"
+    "update-file-icons": "git submodule foreach git pull origin master && node file-icons-generator.js",
+    "theme:new": "node packages/theme-forge/index.js"
   },
   "repository": {
     "type": "git",
@@ -40,23 +41,23 @@
   ],
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/GitSquared/edex-ui/issues"
+    "url": "https://github.com/anymousdark/anymousdex/issues"
   },
-  "homepage": "https://github.com/GitSquared/edex-ui#readme",
+  "homepage": "https://github.com/anymousdark/anymousdex#readme",
   "build": {
     "appId": "com.anymousdex.ui",
-    "productName": "AnymousDEX",
+    "productName": "anyDEXpro",
     "publish": "github",
     "asar": true,
     "compression": "normal",
-    "copyright": "Copyright (c) 2026 anymousdark. Based on eDEX-UI (c) 2017-2021 Gabriel 'Squared' SAILLARD (GPL-3.0).",
+    "copyright": "Copyright (c) 2026 anymousdark. GPL-3.0.",
     "directories": {
       "output": "dist",
       "app": "src"
     },
     "forceCodeSigning": false,
     "npmRebuild": false,
-    "artifactName": "AnymousDEX-${os}-${arch}.${ext}",
+    "artifactName": "anyDEXpro-${os}-${arch}.${ext}",
     "linux": {
       "target": [
         "AppImage"
@@ -65,7 +66,7 @@
       "icon": "media/linuxIcons"
     },
     "appImage": {
-      "artifactName": "AnymousDEX-Linux-${arch}.AppImage"
+      "artifactName": "anyDEXpro-Linux-${arch}.AppImage"
     },
     "mac": {
       "target": [
@@ -80,7 +81,7 @@
       "icon": "media/icon.icns"
     },
     "dmg": {
-      "artifactName": "AnymousDEX-macOS-${arch}.dmg"
+      "artifactName": "anyDEXpro-macOS-${arch}.dmg"
     },
     "win": {
       "target": [
@@ -94,13 +95,13 @@
       "icon": "media/anymousdex.png"
     },
     "nsis": {
-      "artifactName": "AnymousDEX-Windows-${arch}.exe",
+      "artifactName": "anyDEXpro-Windows-${arch}.exe",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": true
     },
     "portable": {
-      "artifactName": "AnymousDEX-${version}-portable.exe"
+      "artifactName": "anyDEXpro-${version}-portable.exe"
     }
   },
   "dependencies": {

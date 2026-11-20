@@ -1,0 +1,1375 @@
+/* anyDEXpro - XFCE-inspired desktop shell
+   Panel, start menu, desktop surface and custom pointer. */
+
+:root {
+    --xde-panel-h: 4.6vh;
+    --xde-font-scale: 1.45;
+    --xde-wall-dim: 0.2;
+    --xde-bg: #11151d;
+    --xde-bg-soft: rgba(24, 30, 41, 0.86);
+    --xde-line: rgba(var(--color_r), var(--color_g), var(--color_b), 0.22);
+    --xde-line-strong: rgba(var(--color_r), var(--color_g), var(--color_b), 0.42);
+    --xde-accent: rgb(var(--color_r), var(--color_g), var(--color_b));
+    --xde-text: rgb(var(--color_r), var(--color_g), var(--color_b));
+    --xde-muted: rgba(var(--color_r), var(--color_g), var(--color_b), 0.58);
+    --xde-cursor: url("../cursors/anymous_arrow.png") 2 1, default;
+}
+
+body {
+    box-sizing: border-box;
+    padding-bottom: calc(var(--xde-panel-h) + 0.9vh) !important;
+}
+
+html, body {
+    cursor: var(--xde-cursor) !important;
+}
+
+/* Keep real text cursors where they belong */
+input, textarea, .xterm, .xterm .xterm-screen, pre, #textEditorOverlay textarea {
+    cursor: auto;
+}
+input, textarea, #textEditorOverlay textarea {
+    cursor: text;
+}
+.xterm:not(.enable-mouse-events) .xterm-screen {
+    cursor: text;
+}
+
+button, [role="button"], .xde-task, .xde-dicon, .xde-app, .xde-theme, .xde-cat, li, .xde-start {
+    cursor: pointer;
+}
+
+/* ---------- bottom panel ---------- */
+
+#xde_taskbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--xde-panel-h);
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    gap: 0.45vh;
+    padding: 0 0.7vh;
+    box-sizing: border-box;
+    font-family: var(--font_main), sans-serif;
+    color: var(--xde-text);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 58%),
+        linear-gradient(180deg, rgba(21, 26, 36, 0.96), rgba(13, 16, 23, 0.985));
+    border-top: 0.14vh solid var(--xde-line-strong);
+    box-shadow: 0 -0.5vh 1.8vh rgba(0, 0, 0, 0.5), inset 0 0.092vh 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    user-select: none;
+}
+
+.xde-panel-sep {
+    width: 0.092vh;
+    height: 2.5vh;
+    flex: 0 0 auto;
+    margin: 0 0.25vh;
+    background: var(--xde-line);
+}
+
+/* start button */
+.xde-start {
+    display: flex;
+    align-items: center;
+    gap: 0.62vh;
+    height: 3.15vh;
+    padding: 0 1.05vh 0 0.5vh;
+    flex: 0 0 auto;
+    border: 0.092vh solid var(--xde-line-strong);
+    border-radius: 0.75vh;
+    background: linear-gradient(180deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.14), rgba(var(--color_r), var(--color_g), var(--color_b), 0.04));
+    color: var(--xde-text);
+    font-family: var(--font_main), sans-serif;
+    transition: background 0.13s linear, border-color 0.13s linear, color 0.13s linear, box-shadow 0.13s linear;
+}
+.xde-start:hover {
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.7);
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+    box-shadow: 0 0 1.2vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+}
+.xde-start.open {
+    background: rgb(var(--color_r), var(--color_g), var(--color_b));
+    border-color: rgb(var(--color_r), var(--color_g), var(--color_b));
+    color: var(--color_light_black);
+}
+.xde-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25vh;
+    height: 2.25vh;
+    flex: 0 0 auto;
+    border-radius: 0.55vh;
+    background: rgb(var(--color_r), var(--color_g), var(--color_b));
+    color: var(--color_light_black);
+    box-shadow: 0 0 0.8vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.35);
+}
+.xde-logo svg { width: 1.5vh; height: 1.5vh; }
+.xde-start.open .xde-logo {
+    background: var(--color_light_black);
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+}
+.xde-start-text {
+    display: flex;
+    align-items: baseline;
+    gap: 0.12vh;
+    font-size: calc(1.32vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.09vh;
+    line-height: 1;
+    white-space: nowrap;
+}
+.xde-start-text strong { font-weight: 600; }
+.xde-start-text em {
+    font-style: normal;
+    font-weight: 300;
+    opacity: 0.66;
+}
+
+/* task buttons */
+.xde-tasks {
+    display: flex;
+    align-items: center;
+    gap: 0.3vh;
+    min-width: 0;
+    flex: 0 1 auto;
+    overflow: hidden;
+}
+.xde-task {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5vh;
+    height: 3.15vh;
+    padding: 0 0.85vh;
+    flex: 0 0 auto;
+    border: 0.092vh solid transparent;
+    border-radius: 0.65vh;
+    background: transparent;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.66);
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(1.1vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.04vh;
+    transition: background 0.12s linear, color 0.12s linear, border-color 0.12s linear;
+}
+.xde-task svg {
+    width: 1.55vh;
+    height: 1.55vh;
+    flex: 0 0 auto;
+}
+.xde-task:hover {
+    color: var(--xde-text);
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.1);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.2);
+}
+.xde-task.active {
+    color: var(--xde-text);
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.1);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+}
+.xde-task.active::after {
+    content: "";
+    position: absolute;
+    left: 0.9vh;
+    right: 0.9vh;
+    bottom: -0.1vh;
+    height: 0.2vh;
+    border-radius: 0.2vh;
+    background: rgb(var(--color_r), var(--color_g), var(--color_b));
+    box-shadow: 0 0 0.6vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.8);
+}
+
+/* tray */
+.xde-tray {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.25vh;
+    flex: 0 0 auto;
+}
+.xde-tray-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.9vh;
+    height: 2.9vh;
+    flex: 0 0 auto;
+    border: 0.092vh solid transparent;
+    border-radius: 0.6vh;
+    background: transparent;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.68);
+    transition: background 0.12s linear, color 0.12s linear, border-color 0.12s linear;
+}
+.xde-tray-btn svg { width: 1.55vh; height: 1.55vh; }
+.xde-tray-btn:hover {
+    color: var(--xde-text);
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.1);
+}
+.xde-tray-btn.on {
+    color: var(--color_light_black);
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.82);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.9);
+}
+
+.xde-tray-stats {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.16vh;
+    padding: 0 0.7vh;
+    margin: 0 0.15vh;
+    border-left: 0.092vh solid var(--xde-line);
+    border-right: 0.092vh solid var(--xde-line);
+    height: 2.9vh;
+    font-family: var(--font_mono), monospace;
+    font-size: calc(0.8vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.02vh;
+    color: var(--xde-muted);
+    min-width: 7.4vh;
+}
+.xde-tray-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.4vh;
+    line-height: 1;
+}
+.xde-tray-stats b { font-weight: 400; }
+.xde-stat-dot {
+    width: 0.45vh;
+    height: 0.45vh;
+    border-radius: 50%;
+    background: rgb(var(--color_r), var(--color_g), var(--color_b));
+    box-shadow: 0 0 0.5vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.8);
+}
+.xde-stat-dot.ram { background: var(--color_yellow); box-shadow: 0 0 0.5vh var(--color_yellow); }
+
+.xde-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.16vh;
+    min-width: 8.2vh;
+    padding: 0 0.75vh;
+    line-height: 1;
+}
+#xde_clock_time {
+    font-family: var(--font_mono), monospace;
+    font-size: calc(1.3vh * var(--xde-font-scale, 1));
+    font-weight: 500;
+    letter-spacing: 0.06vh;
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+}
+#xde_clock_date {
+    font-size: calc(0.82vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.05vh;
+    color: var(--xde-muted);
+    text-transform: uppercase;
+}
+
+/* ---------- start menu ---------- */
+
+#xde_menu {
+    position: fixed;
+    left: 0.8vh;
+    bottom: calc(var(--xde-panel-h) + 0.75vh);
+    width: 64vh;
+    height: 62vh;
+    max-width: calc(100vw - 1.6vh);
+    max-height: calc(100vh - var(--xde-panel-h) - 2.4vh);
+    z-index: 1300;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: var(--font_main), sans-serif;
+    color: var(--xde-text);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--color_r), var(--color_g), var(--color_b), 0.13), transparent 42%),
+        linear-gradient(180deg, rgba(28, 34, 46, 0.975), rgba(16, 20, 28, 0.985));
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.32);
+    border-radius: 1.1vh;
+    box-shadow: 0 1.6vh 5vh rgba(0, 0, 0, 0.62), 0 0 3vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.07), inset 0 0.092vh 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    transform: translateY(1.2vh) scale(0.986);
+    transform-origin: bottom left;
+    pointer-events: none;
+    transition: opacity 0.14s ease, transform 0.14s ease;
+}
+#xde_menu.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.xde-menu-head {
+    display: flex;
+    align-items: center;
+    gap: 1vh;
+    padding: 1.05vh 1.1vh 0.85vh;
+    flex: 0 0 auto;
+    border-bottom: 0.092vh solid var(--xde-line);
+}
+.xde-menu-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.2vh;
+    height: 4.2vh;
+    flex: 0 0 auto;
+    border-radius: 1vh;
+    background: linear-gradient(150deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.95), rgba(var(--color_r), var(--color_g), var(--color_b), 0.5));
+    color: var(--color_light_black);
+    box-shadow: 0 0 1.4vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.24);
+}
+.xde-menu-avatar svg { width: 2.7vh; height: 2.7vh; }
+.xde-menu-id {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28vh;
+    min-width: 0;
+}
+.xde-menu-id strong {
+    font-size: calc(1.72vh * var(--xde-font-scale, 1));
+    font-weight: 600;
+    letter-spacing: 0.16vh;
+    line-height: 1;
+}
+.xde-menu-id strong em { font-style: normal; font-weight: 300; opacity: 0.58; }
+.xde-menu-id small {
+    font-size: calc(0.9vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.09vh;
+    color: var(--xde-muted);
+    text-transform: uppercase;
+}
+.xde-menu-close {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.7vh;
+    height: 2.7vh;
+    border: 0.092vh solid transparent;
+    border-radius: 0.6vh;
+    background: transparent;
+    color: var(--xde-muted);
+    transition: background 0.12s linear, color 0.12s linear;
+}
+.xde-menu-close svg { width: 1.5vh; height: 1.5vh; }
+.xde-menu-close:hover { color: var(--xde-text); background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.1); }
+
+.xde-menu-search {
+    display: flex;
+    align-items: center;
+    gap: 0.65vh;
+    margin: 0.8vh 1.1vh 0.6vh;
+    padding: 0 0.8vh;
+    height: 3.4vh;
+    flex: 0 0 auto;
+    border: 0.092vh solid var(--xde-line);
+    border-radius: 0.7vh;
+    background: rgba(0, 0, 0, 0.24);
+    transition: border-color 0.13s linear, background 0.13s linear;
+}
+.xde-menu-search:focus-within {
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.62);
+    background: rgba(0, 0, 0, 0.34);
+}
+.xde-menu-search > svg { width: 1.5vh; height: 1.5vh; flex: 0 0 auto; opacity: 0.55; }
+.xde-menu-search input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--xde-text);
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(1.15vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.03vh;
+    cursor: text;
+}
+.xde-menu-search input::placeholder { color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.38); }
+.xde-menu-search kbd {
+    flex: 0 0 auto;
+    padding: 0.2vh 0.4vh;
+    border: 0.092vh solid var(--xde-line);
+    border-radius: 0.35vh;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--xde-muted);
+    font-family: var(--font_mono), monospace;
+    font-size: calc(0.72vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.04vh;
+}
+
+.xde-menu-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+.xde-menu-side {
+    display: flex;
+    flex-direction: column;
+    gap: 0.22vh;
+    width: 18vh;
+    flex: 0 0 auto;
+    padding: 0.5vh 0.55vh;
+    border-right: 0.092vh solid var(--xde-line);
+    overflow-y: auto;
+}
+.xde-cat {
+    display: flex;
+    align-items: center;
+    gap: 0.6vh;
+    padding: 0.68vh 0.7vh;
+    border: 0.092vh solid transparent;
+    border-radius: 0.6vh;
+    background: transparent;
+    color: var(--xde-muted);
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(1.05vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.04vh;
+    text-align: left;
+    transition: background 0.12s linear, color 0.12s linear, border-color 0.12s linear;
+}
+.xde-cat svg { width: 1.6vh; height: 1.6vh; flex: 0 0 auto; }
+.xde-cat:hover { color: var(--xde-text); background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.07); }
+.xde-cat.active {
+    color: var(--xde-text);
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.13);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+    box-shadow: inset 0.22vh 0 0 rgb(var(--color_r), var(--color_g), var(--color_b));
+}
+
+.xde-menu-content {
+    flex: 1;
+    min-width: 0;
+    padding: 0.85vh 1vh 1vh;
+    overflow-y: auto;
+}
+.xde-cat-pane { display: none; }
+.xde-cat-pane.active { display: block; animation: xde-pane-in 0.16s ease; }
+@keyframes xde-pane-in {
+    from { opacity: 0; transform: translateY(0.4vh); }
+    to { opacity: 1; transform: none; }
+}
+.xde-cat-pane h4 {
+    margin: 0 0 0.7vh;
+    font-size: calc(0.92vh * var(--xde-font-scale, 1));
+    font-weight: 500;
+    letter-spacing: 0.16vh;
+    text-transform: uppercase;
+    color: var(--xde-muted);
+}
+
+.xde-app-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55vh;
+}
+.xde-app {
+    display: flex;
+    align-items: center;
+    gap: 0.7vh;
+    padding: 0.68vh 0.7vh;
+    min-width: 0;
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.12);
+    border-radius: 0.7vh;
+    background: rgba(255, 255, 255, 0.017);
+    color: var(--xde-text);
+    font-family: var(--font_main), sans-serif;
+    text-align: left;
+    transition: background 0.12s linear, border-color 0.12s linear, transform 0.12s linear;
+}
+.xde-app:hover {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.09);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.38);
+    transform: translateY(-0.12vh);
+}
+.xde-app-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.1vh;
+    height: 3.1vh;
+    flex: 0 0 auto;
+    border-radius: 0.55vh;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.12);
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.18);
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+}
+.xde-app-icon svg { width: 1.8vh; height: 1.8vh; }
+.xde-app-text { display: flex; flex-direction: column; gap: 0.14vh; min-width: 0; }
+.xde-app-text strong {
+    font-size: calc(1.05vh * var(--xde-font-scale, 1));
+    font-weight: 500;
+    letter-spacing: 0.03vh;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.xde-app-text small {
+    font-size: calc(0.8vh * var(--xde-font-scale, 1));
+    font-weight: 300;
+    color: var(--xde-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.xde-app.danger .xde-app-icon {
+    color: var(--color_red);
+    background: rgba(191, 97, 106, 0.1);
+    border-color: rgba(191, 97, 106, 0.3);
+}
+.xde-app.danger:hover { border-color: rgba(191, 97, 106, 0.5); background: rgba(191, 97, 106, 0.1); }
+
+.xde-pane-note {
+    margin: 0 0 1vh;
+    font-size: calc(0.92vh * var(--xde-font-scale, 1));
+    line-height: 1.55;
+    color: var(--xde-muted);
+}
+.xde-empty {
+    margin: 0.8vh 0;
+    font-size: calc(0.95vh * var(--xde-font-scale, 1));
+    color: var(--xde-muted);
+}
+
+.xde-theme-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55vh;
+}
+.xde-theme {
+    display: flex;
+    align-items: center;
+    gap: 0.7vh;
+    padding: 0.75vh 0.75vh;
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.14);
+    border-radius: 0.65vh;
+    background: rgba(255, 255, 255, 0.017);
+    color: var(--xde-text);
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(1vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.04vh;
+    text-transform: capitalize;
+    transition: background 0.12s linear, border-color 0.12s linear;
+}
+.xde-theme:hover {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.09);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.4);
+}
+.xde-theme-dot {
+    width: 1.6vh;
+    height: 1.6vh;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    box-shadow: 0 0 0.8vh currentColor;
+}
+
+.xde-cursor-note {
+    display: flex;
+    align-items: center;
+    gap: 0.9vh;
+    margin-top: 1.2vh;
+    padding: 0.8vh;
+    border: 0.092vh solid var(--xde-line);
+    border-radius: 0.7vh;
+    background: rgba(0, 0, 0, 0.16);
+}
+.xde-cursor-note div { display: flex; flex-direction: column; gap: 0.15vh; }
+.xde-cursor-note strong { font-size: calc(1vh * var(--xde-font-scale, 1)); font-weight: 500; }
+.xde-cursor-note small { font-size: calc(0.82vh * var(--xde-font-scale, 1)); color: var(--xde-muted); }
+.xde-cursor-preview {
+    width: 3.4vh;
+    height: 3.4vh;
+    flex: 0 0 auto;
+    border-radius: 0.55vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    background-image: url("../cursors/anymous_arrow.png");
+    background-size: 60%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 0.092vh solid var(--xde-line);
+}
+
+.xde-about-version {
+    margin: 0 0 0.8vh;
+    font-family: var(--font_mono), monospace;
+    font-size: calc(0.88vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.04vh;
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+    opacity: 0.86;
+}
+.xde-about-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5vh;
+    margin-bottom: 1.1vh;
+}
+.xde-about-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25vh;
+    padding: 0.65vh 0.7vh;
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.13);
+    border-radius: 0.6vh;
+    background: rgba(255, 255, 255, 0.016);
+}
+.xde-about-grid span {
+    font-size: calc(0.7vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.12vh;
+    color: var(--xde-muted);
+}
+.xde-about-grid b { font-size: calc(1vh * var(--xde-font-scale, 1)); font-weight: 500; }
+.xde-about-links button {
+    display: flex;
+    align-items: center;
+    gap: 0.6vh;
+    width: 100%;
+    padding: 0.7vh 0.8vh;
+    border: 0.092vh solid var(--xde-line);
+    border-radius: 0.6vh;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.06);
+    color: var(--xde-text);
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(0.95vh * var(--xde-font-scale, 1));
+    text-align: left;
+    transition: background 0.12s linear, border-color 0.12s linear;
+}
+.xde-about-links button:hover { background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.12); border-color: var(--xde-line-strong); }
+.xde-about-links svg { width: 1.7vh; height: 1.7vh; }
+
+.xde-menu-foot {
+    display: flex;
+    align-items: center;
+    gap: 0.35vh;
+    padding: 0.55vh 0.8vh;
+    flex: 0 0 auto;
+    border-top: 0.092vh solid var(--xde-line);
+    background: rgba(0, 0, 0, 0.18);
+}
+.xde-menu-foot button {
+    display: flex;
+    align-items: center;
+    gap: 0.45vh;
+    height: 2.75vh;
+    padding: 0 0.7vh;
+    border: 0.092vh solid transparent;
+    border-radius: 0.55vh;
+    background: transparent;
+    color: var(--xde-muted);
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(0.95vh * var(--xde-font-scale, 1));
+    transition: background 0.12s linear, color 0.12s linear;
+}
+.xde-menu-foot button svg { width: 1.45vh; height: 1.45vh; }
+.xde-menu-foot button:hover { color: var(--xde-text); background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.09); }
+.xde-menu-foot button.danger:hover { color: var(--color_red); background: rgba(191, 97, 106, 0.1); }
+.xde-foot-spacer { flex: 1; }
+
+/* ---------- desktop surface ---------- */
+
+#xde_desktop {
+    position: fixed;
+    inset: 0 0 var(--xde-panel-h) 0;
+    z-index: 1150;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    font-family: var(--font_main), sans-serif;
+    color: var(--xde-text);
+    background:
+        radial-gradient(circle at 16% 18%, rgba(var(--color_r), var(--color_g), var(--color_b), 0.17), transparent 42%),
+        radial-gradient(circle at 84% 76%, rgba(var(--color_r), var(--color_g), var(--color_b), 0.08), transparent 46%),
+        linear-gradient(145deg, #0b0e14 0%, var(--color_light_black) 48%, #0c1017 100%);
+    transition: opacity 0.22s linear;
+}
+#xde_desktop::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(var(--color_r), var(--color_g), var(--color_b), 0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.028) 1px, transparent 1px);
+    background-size: 4.2vh 4.2vh;
+    mask-image: radial-gradient(circle at 46% 48%, black, transparent 84%);
+}
+#xde_desktop::after {
+    content: "anyDEXpro";
+    position: absolute;
+    right: 2.6vh;
+    bottom: 1.2vh;
+    font-size: calc(15vh * var(--xde-font-scale, 1));
+    font-weight: 300;
+    letter-spacing: 0.4vh;
+    line-height: 1;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.045);
+    pointer-events: none;
+    white-space: nowrap;
+}
+body.xde-desktop-mode #xde_desktop {
+    opacity: 1;
+    pointer-events: auto;
+}
+body.xde-desktop-mode #main_shell,
+body.xde-desktop-mode section.mod_column,
+body.xde-desktop-mode section#filesystem,
+body.xde-desktop-mode section#keyboard {
+    opacity: 0 !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.xde-desktop-head {
+    position: absolute;
+    top: 2vh;
+    left: 2.2vh;
+    right: 2.2vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.2vh;
+    border-bottom: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.13);
+}
+.xde-desktop-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.9vh;
+    font-size: calc(1.5vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.18vh;
+}
+.xde-desktop-brand em { font-style: normal; font-weight: 300; opacity: 0.55; }
+.xde-logo-sm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2vh;
+    height: 3.2vh;
+    border-radius: 0.8vh;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.14);
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.36);
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+}
+.xde-logo-sm svg { width: 2.1vh; height: 2.1vh; }
+.xde-desktop-hint {
+    font-family: var(--font_mono), monospace;
+    font-size: calc(0.86vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.2vh;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.42);
+}
+
+.xde-desktop-icons {
+    position: absolute;
+    top: 8.4vh;
+    left: 2.2vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1vh;
+}
+.xde-dicon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5vh;
+    width: 9.6vh;
+    padding: 0.7vh 0.4vh 0.55vh;
+    border: 0.092vh solid transparent;
+    border-radius: 0.8vh;
+    background: transparent;
+    color: var(--xde-text);
+    font-family: var(--font_main), sans-serif;
+    transition: background 0.12s linear, border-color 0.12s linear;
+}
+.xde-dicon > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.6vh;
+    height: 5.6vh;
+    border-radius: 1.1vh;
+    background: linear-gradient(160deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.18), rgba(var(--color_r), var(--color_g), var(--color_b), 0.06));
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+    box-shadow: 0 0.6vh 1.6vh rgba(0, 0, 0, 0.3);
+}
+.xde-dicon > span svg { width: 3.1vh; height: 3.1vh; }
+.xde-dicon b {
+    font-size: calc(0.95vh * var(--xde-font-scale, 1));
+    font-weight: 400;
+    letter-spacing: 0.04vh;
+    text-shadow: 0 0.15vh 0.5vh rgba(0, 0, 0, 0.7);
+}
+.xde-dicon:hover {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.08);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.22);
+}
+.xde-dicon:active { transform: scale(0.97); }
+
+.xde-desktop-foot {
+    position: absolute;
+    right: 2.4vh;
+    top: 2.1vh;
+    display: none;
+    align-items: center;
+    gap: 0.7vh;
+    color: var(--xde-muted);
+    font-size: calc(0.9vh * var(--xde-font-scale, 1));
+}
+.xde-desktop-foot > span svg { width: 2vh; height: 2vh; }
+
+/* focus pulse when the Files task is pressed */
+section#filesystem.xde-flash {
+    animation: xde-file-flash 1.05s ease;
+}
+@keyframes xde-file-flash {
+    0%, 100% { box-shadow: none; }
+    18% { box-shadow: 0 0 2.2vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.55), inset 0 0 2.2vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.12); }
+    60% { box-shadow: 0 0 1vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.24); }
+}
+
+/* keyboard visibility */
+body.xde-kb-hidden section#keyboard { display: none; }
+body.xde-kb-hidden section#filesystem {
+    width: 82vw;
+    margin-right: 16.4vw;
+    transition: width 0.3s cubic-bezier(0.85, 0.5, 0.85, 0.5);
+}
+
+/* ---------- responsive panel ---------- */
+
+@media (max-width: 1180px) {
+    .xde-task span { display: none; }
+    .xde-task { padding: 0 0.65vh; }
+    .xde-task.active::after { left: 0.5vh; right: 0.5vh; }
+    .xde-tray-stats { min-width: 6.8vh; }
+}
+
+@media (max-width: 900px) {
+    .xde-start-text { display: none; }
+    .xde-start { padding-right: 0.5vh; }
+    .xde-tray-stats { display: none; }
+    .xde-clock { min-width: 7.2vh; }
+    #xde_menu { width: 72vh; }
+}
+
+@media (max-height: 700px) {
+    #xde_menu { height: 70vh; }
+    .xde-menu-body { min-height: 0; }
+}
+
+/* ---------- wallpaper, scale and window states ---------- */
+
+body.xde-font-compact { --xde-font-scale: 1.24; }
+body.xde-font-large { --xde-font-scale: 1.68; }
+
+body.xde-wallpaper-aurora {
+    background-color: #0b0e14;
+    background-image: url("../wallpapers/anydexpro.svg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+body.xde-wallpaper-grid {
+    background-color: #0d1118;
+    background-image:
+        linear-gradient(rgba(var(--color_r), var(--color_g), var(--color_b), 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.07) 1px, transparent 1px);
+    background-size: 3.2vh 3.2vh;
+}
+body.xde-wallpaper-solid { background-color: #0d1117; }
+body.xde-wallpaper-custom {
+    background-color: #0b0e14;
+    background-image: var(--xde-wallpaper, none);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+body.xde-wallpaper-aurora #xde_desktop,
+body.xde-wallpaper-custom #xde_desktop,
+body.xde-wallpaper-grid #xde_desktop,
+body.xde-wallpaper-solid #xde_desktop {
+    background-color: #0b0e14;
+    background-image: inherit;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+body.xde-wallpaper-grid #xde_desktop {
+    background-image:
+        linear-gradient(rgba(var(--color_r), var(--color_g), var(--color_b), 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.07) 1px, transparent 1px);
+    background-size: 3.2vh 3.2vh;
+}
+#xde_desktop::before { opacity: 0.55; }
+
+html.xde-native-cursor,
+body.xde-native-cursor { cursor: default !important; }
+body.xde-no-scanlines::after { display: none !important; }
+body.xde-hide-desktop-icons .xde-desktop-icons { display: none; }
+body.xde-compact-panel .xde-task span,
+body.xde-compact-panel .xde-start-text { display: none; }
+body.xde-compact-panel .xde-task { padding: 0 0.65vh; }
+body.xde-compact-panel .xde-start { padding-right: 0.55vh; }
+
+/* ---------- terminal title bar ---------- */
+
+#main_shell_titlebar {
+    display: flex;
+    align-items: center;
+    gap: 0.6vh;
+    width: calc(100% + 1.48vh);
+    height: 3.1vh;
+    margin: -0.74vh -0.74vh 0;
+    padding: 0 0.55vh 0 0.8vh;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(0, 0, 0, 0.16));
+    border-bottom: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.24);
+    user-select: none;
+}
+.xde-window-id {
+    display: flex;
+    align-items: center;
+    gap: 0.55vh;
+    min-width: 0;
+}
+.xde-window-id svg { width: 1.5vh; height: 1.5vh; opacity: 0.72; }
+.xde-window-id strong {
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(1.1vh * var(--xde-font-scale, 1));
+    font-weight: 500;
+    letter-spacing: 0.06vh;
+    white-space: nowrap;
+}
+.xde-window-id small {
+    font-family: var(--font_mono), monospace;
+    font-size: calc(0.82vh * var(--xde-font-scale, 1));
+    color: var(--xde-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.xde-win-controls { margin-left: auto; display: flex; align-items: center; gap: 0.22vh; }
+.xde-win-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5vh;
+    height: 2.1vh;
+    border: 0.092vh solid transparent;
+    border-radius: 0.42vh;
+    background: transparent;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.62);
+    transition: background 0.12s linear, color 0.12s linear, border-color 0.12s linear;
+}
+.xde-win-btn svg { width: 1.2vh; height: 1.2vh; }
+.xde-win-btn:hover {
+    color: var(--xde-text);
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.14);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.26);
+}
+.xde-win-btn.close:hover { color: #f0b6bb; background: rgba(191, 97, 106, 0.2); border-color: rgba(191, 97, 106, 0.45); }
+
+/* ---------- window states ---------- */
+
+body.xde-term-min section#main_shell {
+    opacity: 0 !important;
+    visibility: hidden;
+    transform: translateY(4vh) scale(0.97);
+    pointer-events: none;
+}
+body.xde-term-max section#main_shell {
+    position: fixed;
+    left: 1.4vw;
+    right: 1.4vw;
+    top: 2.2vh;
+    bottom: calc(var(--xde-panel-h) + 1.4vh);
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    z-index: 1250;
+    box-shadow: 0 2.4vh 7vh rgba(0, 0, 0, 0.64), 0 0 3vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.08);
+}
+body.xde-term-max::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1240;
+    background: rgba(4, 7, 11, 0.55);
+    pointer-events: none;
+}
+body.xde-term-max #xde_taskbar { z-index: 1300; }
+body.xde-files-min section#filesystem {
+    opacity: 0 !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* ---------- lock screen ---------- */
+
+#xde_lock {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0a0d13;
+    background-image: url("../wallpapers/anydexpro.svg");
+    background-size: cover;
+    background-position: center;
+    font-family: var(--font_main), sans-serif;
+    color: var(--xde-text);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.28s linear, visibility 0.28s linear;
+}
+#xde_lock::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 9, 14, 0.7);
+    backdrop-filter: blur(10px);
+}
+body.xde-locked #xde_lock { opacity: 1; visibility: visible; pointer-events: auto; }
+.xde-lock-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7vh;
+    padding: 4.2vh 6vh;
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+    border-radius: 1.4vh;
+    background: rgba(13, 17, 24, 0.78);
+    box-shadow: 0 2vh 7vh rgba(0, 0, 0, 0.6), 0 0 4vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.08);
+    text-align: center;
+}
+.xde-lock-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 6.4vh;
+    height: 6.4vh;
+    border-radius: 1.5vh;
+    background: linear-gradient(150deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.95), rgba(var(--color_r), var(--color_g), var(--color_b), 0.45));
+    color: var(--color_light_black);
+    box-shadow: 0 0 2vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+}
+.xde-lock-logo svg { width: 4.2vh; height: 4.2vh; }
+.xde-lock-box > strong {
+    font-size: calc(2.2vh * var(--xde-font-scale, 1));
+    font-weight: 600;
+    letter-spacing: 0.2vh;
+}
+.xde-lock-box > strong em { font-style: normal; font-weight: 300; opacity: 0.55; }
+.xde-lock-box > p {
+    margin: 1.4vh 0 0;
+    font-family: var(--font_mono), monospace;
+    font-size: calc(4.6vh * var(--xde-font-scale, 1));
+    line-height: 1;
+    letter-spacing: 0.12vh;
+}
+.xde-lock-box > small {
+    font-size: calc(1vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.12vh;
+    color: var(--xde-muted);
+    text-transform: uppercase;
+}
+#xde_unlock {
+    margin-top: 2.4vh;
+    height: 3.9vh;
+    padding: 0 2.4vh;
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.6);
+    border-radius: 0.7vh;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+    color: var(--xde-text);
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(1.1vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.1vh;
+    transition: background 0.13s linear, color 0.13s linear;
+}
+#xde_unlock:hover { background: rgb(var(--color_r), var(--color_g), var(--color_b)); color: var(--color_light_black); }
+.xde-lock-hint {
+    margin-top: 0.8vh;
+    font-size: calc(0.78vh * var(--xde-font-scale, 1));
+    letter-spacing: 0.1vh;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.4);
+}
+
+/* ---------- clean desktop session ----------
+   The dashboard panels are gone: wallpaper, panel and app windows only. */
+
+body.xde-clean-desktop {
+    padding-top: 0 !important;
+    padding-bottom: calc(var(--xde-panel-h) + 1.6vh) !important;
+}
+body.xde-clean-desktop section.mod_column,
+body.xde-clean-desktop #xde_desktop,
+body.xde-clean-desktop #main_shell > h3.title,
+body.xde-clean-desktop section#filesystem:not(.xde-window-open) {
+    display: none !important;
+}
+body.xde-clean-desktop section#main_shell {
+    width: 76vw;
+    height: 68vh;
+    position: relative;
+    z-index: 10;
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.34);
+    border-radius: 0.9vh;
+    background: rgba(11, 15, 21, 0.92);
+    box-shadow: 0 2.2vh 6.4vh rgba(0, 0, 0, 0.62), 0 0 3vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.06);
+    backdrop-filter: blur(7px);
+}
+body.xde-clean-desktop #main_shell_titlebar {
+    border-radius: 0.9vh 0.9vh 0 0;
+}
+body.xde-clean-desktop.xde-term-max section#main_shell {
+    width: auto;
+    height: auto;
+}
+
+/* Files becomes a real window instead of a fixed dashboard panel */
+body.xde-clean-desktop section#filesystem.xde-window-open {
+    display: block !important;
+    position: fixed;
+    left: 3vw;
+    bottom: calc(var(--xde-panel-h) + 2vh);
+    width: 56vw;
+    height: 48vh;
+    top: auto;
+    margin: 0;
+    padding: 0.7vh 0.9vh 1vh;
+    box-sizing: border-box;
+    z-index: 20;
+    opacity: 1;
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.34);
+    border-radius: 0.9vh;
+    background: rgba(11, 15, 21, 0.95);
+    box-shadow: 0 2vh 6vh rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+}
+body.xde-clean-desktop section#filesystem.xde-window-open > h3.title {
+    position: static;
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: 3vh;
+    margin: 0 0 0.4vh;
+    padding: 0 0.4vh;
+    border-bottom: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.24);
+    font-size: calc(1.05vh * var(--xde-font-scale, 1));
+}
+body.xde-clean-desktop section#filesystem.xde-window-open > h3.title > p {
+    width: auto;
+    margin: 0;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open > h3.title > p:last-child {
+    margin-left: auto;
+    padding-left: 1vh;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.72;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: calc(100% - 7.4vh);
+    padding: 0.5vh 0.2vh;
+    grid-template-columns: repeat(auto-fill, minmax(9vh, 1fr));
+    grid-auto-rows: 9vh;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > * {
+    width: 9vh;
+    height: 9vh;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > * > svg {
+    width: 4.6vh;
+    height: 4.6vh;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar {
+    position: absolute;
+    left: 0.9vh;
+    right: 0.9vh;
+    bottom: 0.5vh;
+    top: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.8vh;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar > h3 { width: 34%; }
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar > progress { flex: 1; width: auto; }
+.xde-fs-close {
+    position: absolute;
+    top: 0.45vh;
+    right: 0.55vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.3vh;
+    height: 2.3vh;
+    border: 0.092vh solid transparent;
+    border-radius: 0.45vh;
+    background: transparent;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.6);
+    z-index: 2;
+}
+.xde-fs-close svg { width: 1.3vh; height: 1.3vh; }
+.xde-fs-close:hover { color: #f0b6bb; background: rgba(191, 97, 106, 0.18); border-color: rgba(191, 97, 106, 0.42); }
+
+/* wallpaper dimming and window behaviour */
+body.xde-clean-desktop {
+    box-shadow: inset 0 0 0 100vmax rgba(0, 0, 0, var(--xde-wall-dim, 0.2));
+}
+body.xde-no-animations * {
+    transition: none !important;
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+}
+body.xde-no-shadows #main_shell,
+body.xde-no-shadows #filesystem.xde-window-open,
+body.xde-no-shadows #xde_taskbar,
+body.xde-no-shadows #xde_menu,
+body.xde-no-shadows #settingsOverlay {
+    box-shadow: none !important;
+}
+#main_shell_titlebar { cursor: move; }
+body.xde-window-dragging,
+body.xde-window-dragging * { cursor: move !important; user-select: none !important; }
+body.xde-window-dragging #main_shell { transition: none !important; }
+
+/* app window titlebar close button */
+.xde-win-btn.close { color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.55); }
+
+/* larger touch targets in the panel */
+.xde-task, .xde-tray-btn, .xde-start { min-width: 3.1vh; }
+
+body.xde-clean-desktop section#filesystem.xde-window-open > h3.title {
+    padding-right: 3.2vh;
+}
+.xde-fs-close { background: rgba(0, 0, 0, 0.35); }
+
+/* ---------- window sizing and readability pass ---------- */
+body.xde-clean-desktop section#main_shell {
+    position: fixed;
+    left: 4vw;
+    top: 3.4vh;
+    width: 76vw;
+    height: 70vh;
+    min-width: 42vw;
+    min-height: 30vh;
+    resize: both;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+body.xde-clean-desktop #main_shell_titlebar {
+    height: 3.6vh;
+    margin: -0.74vh -0.74vh 0;
+    padding: 0 0.6vh;
+}
+.xde-window-id strong { font-size: calc(1.32vh * var(--xde-font-scale, 1)); }
+.xde-window-id small { font-size: calc(0.94vh * var(--xde-font-scale, 1)); }
+.xde-window-id svg { width: 1.8vh; height: 1.8vh; }
+.xde-win-btn { width: 2.4vh; height: 2.4vh; }
+.xde-win-btn svg { width: 1.15vh; height: 1.15vh; }
+
+body.xde-clean-desktop section#filesystem.xde-window-open {
+    position: fixed;
+    left: 8vw;
+    top: 12vh;
+    bottom: auto;
+    width: 62vw;
+    height: 58vh;
+    min-width: 34vw;
+    min-height: 28vh;
+    resize: both;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open > h3.title {
+    height: 3.6vh;
+    font-size: calc(1.2vh * var(--xde-font-scale, 1));
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container {
+    height: calc(100% - 8.4vh);
+    grid-template-columns: repeat(auto-fill, minmax(10.5vh, 1fr));
+    grid-auto-rows: 9.6vh;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > * {
+    width: 10.5vh;
+    height: 9.6vh;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > * > h3 {
+    max-height: 42%;
+    padding: 0 0.3vh;
+    font-size: calc(1.18vh * var(--xde-font-scale, 1));
+    line-height: 1.12;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > * > svg {
+    width: 4.8vh;
+    height: 4.8vh;
+    flex: 0 0 auto;
+}
+.xde-task {
+    height: 3.5vh;
+    font-size: calc(1.3vh * var(--xde-font-scale, 1));
+}
+.xde-task svg { width: 1.85vh; height: 1.85vh; }
+.xde-start { height: 3.5vh; }
+.xde-start-text { font-size: calc(1.5vh * var(--xde-font-scale, 1)); }
+.xde-logo { width: 2.5vh; height: 2.5vh; }
+.xde-logo svg { width: 1.7vh; height: 1.7vh; }
+
+/* resize handles must not be eaten by xterm layers */
+body.xde-clean-desktop section#main_shell::after,
+body.xde-clean-desktop section#filesystem.xde-window-open::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 2.2vh;
+    height: 2.2vh;
+    pointer-events: none;
+    background:
+        linear-gradient(135deg, transparent 46%, rgba(var(--color_r), var(--color_g), var(--color_b), 0.28) 47%, rgba(var(--color_r), var(--color_g), var(--color_b), 0.28) 53%, transparent 54%),
+        linear-gradient(135deg, transparent 66%, rgba(var(--color_r), var(--color_g), var(--color_b), 0.2) 67%, rgba(var(--color_r), var(--color_g), var(--color_b), 0.2) 73%, transparent 74%);
+}
+
+/* ---------- generic window manager ---------- */
+#settingsOverlay, #textEditorOverlay, #browserOverlay {
+    resize: both;
+    overflow: hidden;
+}
+.xde-win-maximized,
+body.xde-clean-desktop .xde-win-maximized {
+    left: 1.4vw !important;
+    right: 1.4vw !important;
+    top: 2vh !important;
+    bottom: calc(var(--xde-panel-h) + 1.4vh) !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+}
+#settingsOverlay > header,
+#textEditorOverlay > header,
+#browserOverlay > header {
+    cursor: move;
+    user-select: none;
+}
+#settingsOverlay.se-no-drag > header,
+#textEditorOverlay.se-no-drag > header,
+#browserOverlay.se-no-drag > header { cursor: default; }

@@ -1,0 +1,169 @@
+/* anyDEXpro - built-in text editor */
+
+#textEditorOverlay {
+    position: fixed;
+    left: 8vw;
+    top: 7vh;
+    width: 62vw;
+    height: 74vh;
+    z-index: 1100;
+    display: none;
+    flex-direction: column;
+    background: var(--color_light_black);
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.45);
+    box-shadow: 0 2vh 5vh rgba(0, 0, 0, 0.55), 0 0 1.2vh rgba(var(--color_r), var(--color_g), var(--color_b), 0.12) inset;
+    font-family: var(--font_main), sans-serif;
+    cursor: default;
+}
+#textEditorOverlay.open {
+    display: flex;
+}
+
+#textEditorOverlay > header {
+    display: flex;
+    align-items: center;
+    gap: 0.7vh;
+    padding: 0.8vh 1vh;
+    border-bottom: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+    user-select: none;
+}
+#textEditorOverlay > header > .te-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8vh;
+    margin-right: auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+#textEditorOverlay > header > .te-title > strong {
+    letter-spacing: 0.28vh;
+    font-size: calc(1.5vh * var(--xde-font-scale, 1.45));
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+}
+#textEditorOverlay > header > .te-title > span {
+    font-family: var(--font_mono), monospace;
+    font-size: calc(1.25vh * var(--xde-font-scale, 1.45));
+    opacity: 0.72;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#textEditorOverlay .te-dirty {
+    color: var(--color_yellow);
+    opacity: 0;
+    transition: opacity 0.15s linear;
+}
+#textEditorOverlay .te-dirty.on {
+    opacity: 1;
+}
+
+#textEditorOverlay button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-family: var(--font_main), sans-serif;
+    font-size: calc(1.25vh * var(--xde-font-scale, 1.45));
+    letter-spacing: 0.06vh;
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+    background: transparent;
+    border: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.35);
+    padding: 0.55vh 0.85vh;
+    cursor: pointer;
+    transition: background 0.12s linear, border-color 0.12s linear;
+}
+#textEditorOverlay button:hover {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+    border-color: rgb(var(--color_r), var(--color_g), var(--color_b));
+}
+#textEditorOverlay button:active {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+}
+
+#textEditorOverlay > main {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#textEditorGutter {
+    margin: 0;
+    padding: 1vh 0.7vh 1vh 1vh;
+    width: 6ch;
+    text-align: right;
+    font-family: var(--font_mono), monospace;
+    font-size: calc(1.55vh * var(--xde-font-scale, 1.45));
+    line-height: 1.55;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.38);
+    background: rgba(0, 0, 0, 0.18);
+    border-right: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.18);
+    overflow: hidden;
+    user-select: none;
+}
+
+#textEditorArea {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 1vh 1.2vh;
+    resize: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+    font-family: var(--font_mono), monospace;
+    font-size: calc(1.55vh * var(--xde-font-scale, 1.45));
+    line-height: 1.55;
+    tab-size: 4;
+    white-space: pre;
+    overflow: auto;
+    user-select: text !important;
+    caret-color: rgb(var(--color_r), var(--color_g), var(--color_b));
+}
+#textEditorArea.wrap {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+#textEditorArea::selection {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.25);
+}
+
+#textEditorOverlay > footer {
+    display: flex;
+    align-items: center;
+    gap: 1.6vh;
+    padding: 0.55vh 1vh;
+    border-top: 0.092vh solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+    font-family: var(--font_mono), monospace;
+    font-size: calc(1.15vh * var(--xde-font-scale, 1.45));
+    opacity: 0.66;
+    user-select: none;
+}
+#textEditorOverlay > footer > .te-path {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.editorOpen #keyboard {
+    opacity: 0.18;
+    filter: grayscale(0.6);
+}
+
+/* Editor entry point, styled as a native tab */
+ul#main_shell_tabs > li#shell_tab_editor {
+    width: auto;
+    flex: 0 0 auto;
+    padding-left: 1.5vh;
+    padding-right: 1.5vh;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.72);
+    background: linear-gradient(180deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.14), rgba(var(--color_r), var(--color_g), var(--color_b), 0.02));
+    letter-spacing: 0.06vh;
+    transition: background 0.12s linear, color 0.12s linear;
+}
+ul#main_shell_tabs > li#shell_tab_editor:hover {
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.22);
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@anymousdex/theme-forge",
+  "version": "1.0.0",
+  "description": "Generate AnymousDEX color themes from a single accent color.",
+  "main": "index.js",
+  "bin": {
+    "anymousdex-theme-forge": "index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "anymousdex",
+    "theme",
+    "generator"
+  ],
+  "author": "anymousdark",
+  "license": "GPL-3.0",
+  "private": true
+}

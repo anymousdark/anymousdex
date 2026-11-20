@@ -1,50 +1,50 @@
 {
-    "colors":  {
-                   "r":  216,
-                   "g":  222,
-                   "b":  233,
-                   "black":  "#3B4252",
-                   "red":  "#BF616A",
-                   "green":  "#A3BE8C",
-                   "yellow":  "#EBCB8B",
-                   "blue":  "#81A1C1",
-                   "magenta":  "#B48EAD",
-                   "cyan":  "#88C0D0",
-                   "white":  "#E5E9F0",
-                   "lightBlack":  "#4C566A",
-                   "lightRed":  "#BF616A",
-                   "lightGreen":  "#A3BE8C",
-                   "lightYellow":  "#EBCB8B",
-                   "lightBlue":  "#81A1C1",
-                   "lightMagenta":  "#B48EAD",
-                   "lightCyan":  "#8FBCBB",
-                   "lightWhite":  "#ECEFF4",
-                   "light_black":  "#2E3440",
-                   "grey":  "#353B48"
-               },
-    "cssvars":  {
-                    "font_main":  "United Sans Medium",
-                    "font_main_light":  "United Sans Light"
-                },
-    "terminal":  {
-                     "fontFamily":  "Fira Mono",
-                     "fontSize":  17,
-                     "fontWeight":  "normal",
-                     "cursorStyle":  "block",
-                     "cursorBlink":  true,
-                     "foreground":  "#D8DEE9",
-                     "background":  "#2B313C",
-                     "cursor":  "#88C0D0",
-                     "cursorAccent":  "#2E3440",
-                     "selection":  "rgba(136, 192, 208, 0.28)",
-                     "letterSpacing":  0.1,
-                     "lineHeight":  1.05
-                 },
-    "globe":  {
-                  "base":  "#3B4252",
-                  "marker":  "#EBCB8B",
-                  "pin":  "#88C0D0",
-                  "satellite":  "#BF616A"
-              },
-    "injectCSS":  "/* ===== nord-plus : respiro, brilho e acabamento ===== */\n\n/* titulos e leituras com brilho suave (nao afeta o canvas do terminal) */\nh1, h2, h3, h3.title, #mod_clock_display, #main_shell_greeting {\n    text-shadow: 0 0 0.55vh rgba(216, 222, 233, 0.22);\n}\n\n/* scanlines discretas de CRT */\nbody::after {\n    content: \"\";\n    position: fixed;\n    inset: 0;\n    z-index: 9999;\n    pointer-events: none;\n    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0px, rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 4px);\n    opacity: 0.3;\n}\n\n/* titulos dos paineis um pouco maiores e mais espacados */\nsection \u003e h3.title:first-child {\n    font-size: 1.12vh;\n    letter-spacing: 0.06vh;\n}\n\n/* painel central com profundidade */\nsection#main_shell {\n    width: 64%;\n    box-shadow: 0 0 2.2vh rgba(136, 192, 208, 0.10), inset 0 0 2.2vh rgba(46, 52, 64, 0.55);\n}\n\n/* colunas laterais levemente para dentro da tela */\nsection#mod_column_left { left: 0.2vh; }\nsection#mod_column_right { right: 0.2vh; }\n\n/* mais espaco entre arquivos e teclado */\nsection#filesystem { margin-right: 1vw; }\n\n/* tiles de arquivo arredondados com realce no hover */\ndiv#fs_disp_container \u003e * {\n    border-radius: 0.5vh;\n    transition: background-color 0.15s linear, box-shadow 0.15s linear;\n}\ndiv#fs_disp_container \u003e *:hover {\n    background-color: rgba(136, 192, 208, 0.12);\n    box-shadow: 0 0 1vh rgba(136, 192, 208, 0.18);\n}\n\n/* abas do terminal */\nul#main_shell_tabs \u003e li { transition: filter 0.15s linear; }\nul#main_shell_tabs \u003e li:hover { filter: brightness(145%); }\n\n/* teclas virtuais com cantos suaves */\ndiv.keyboard_key {\n    border-radius: 0.45vh;\n    transition: filter 0.12s linear, box-shadow 0.12s linear;\n}\ndiv.keyboard_key:hover {\n    filter: brightness(150%);\n    box-shadow: 0 0 1vh rgba(136, 192, 208, 0.25);\n}\n\n/* barra de rolagem arredondada */\n::-webkit-scrollbar-thumb { border-radius: 1vh; }\n"
+  "colors": {
+    "r": 216,
+    "g": 222,
+    "b": 233,
+    "black": "#3B4252",
+    "red": "#BF616A",
+    "green": "#A3BE8C",
+    "yellow": "#EBCB8B",
+    "blue": "#81A1C1",
+    "magenta": "#B48EAD",
+    "cyan": "#88C0D0",
+    "white": "#E5E9F0",
+    "lightBlack": "#4C566A",
+    "lightRed": "#BF616A",
+    "lightGreen": "#A3BE8C",
+    "lightYellow": "#EBCB8B",
+    "lightBlue": "#81A1C1",
+    "lightMagenta": "#B48EAD",
+    "lightCyan": "#8FBCBB",
+    "lightWhite": "#ECEFF4",
+    "light_black": "#2E3440",
+    "grey": "#353B48"
+  },
+  "cssvars": {
+    "font_main": "United Sans Medium",
+    "font_main_light": "United Sans Light"
+  },
+  "terminal": {
+    "fontFamily": "Fira Mono",
+    "fontSize": 17,
+    "fontWeight": "normal",
+    "cursorStyle": "block",
+    "cursorBlink": true,
+    "foreground": "#D8DEE9",
+    "background": "#2B313C",
+    "cursor": "#88C0D0",
+    "cursorAccent": "#2E3440",
+    "selection": "rgba(136, 192, 208, 0.28)",
+    "letterSpacing": 0.1,
+    "lineHeight": 1.05
+  },
+  "globe": {
+    "base": "#3B4252",
+    "marker": "#EBCB8B",
+    "pin": "#88C0D0",
+    "satellite": "#BF616A"
+  },
+  "injectCSS": "/* ===== nord-plus : respiro, brilho e acabamento ===== */\n\n/* titulos e leituras com brilho suave (nao afeta o canvas do terminal) */\nh1, h2, h3, h3.title, #mod_clock_display, #main_shell_greeting {\n    text-shadow: 0 0 0.55vh rgba(216, 222, 233, 0.22);\n}\n\n/* scanlines discretas de CRT */\nbody::after {\n    content: \"\";\n    position: fixed;\n    inset: 0;\n    z-index: 9999;\n    pointer-events: none;\n    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0px, rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 4px);\n    opacity: 0.3;\n}\n\n/* titulos dos paineis um pouco maiores e mais espacados */\nsection > h3.title:first-child {\n    font-size: 1.12vh;\n    letter-spacing: 0.06vh;\n}\n\n/* painel central com profundidade */\nsection#main_shell {\n    width: 64%;\n    box-shadow: 0 0 2.2vh rgba(136, 192, 208, 0.10), inset 0 0 2.2vh rgba(46, 52, 64, 0.55);\n}\n\n/* colunas laterais levemente para dentro da tela */\nsection#mod_column_left { left: 0.2vh; }\nsection#mod_column_right { right: 0.2vh; }\n\n/* mais espaco entre arquivos e teclado */\nsection#filesystem { margin-right: 1vw; }\n\n/* tiles de arquivo arredondados com realce no hover */\ndiv#fs_disp_container > * {\n    border-radius: 0.5vh;\n    transition: background-color 0.15s linear, box-shadow 0.15s linear;\n}\ndiv#fs_disp_container > *:hover {\n    background-color: rgba(136, 192, 208, 0.12);\n    box-shadow: 0 0 1vh rgba(136, 192, 208, 0.18);\n}\n\n/* abas do terminal */\nul#main_shell_tabs > li { transition: filter 0.15s linear; }\nul#main_shell_tabs > li:hover { filter: brightness(145%); }\n\n/* teclas virtuais com cantos suaves */\ndiv.keyboard_key {\n    border-radius: 0.45vh;\n    transition: filter 0.12s linear, box-shadow 0.12s linear;\n}\ndiv.keyboard_key:hover {\n    filter: brightness(150%);\n    box-shadow: 0 0 1vh rgba(136, 192, 208, 0.25);\n}\n\n/* barra de rolagem arredondada */\n::-webkit-scrollbar-thumb { border-radius: 1vh; }\n"
 }

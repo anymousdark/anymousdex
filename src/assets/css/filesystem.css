@@ -80,14 +80,14 @@ div#fs_disp_container > * > svg {
     width: 5vh;
 }
 
-/* Add padding around non-edex icons */
+/* Add padding around non-anymousdex icons */
 div#fs_disp_container > * > svg:not([viewBox="0 0 24 24"]) {
     padding: 0.5vh;
     box-sizing: border-box;
 }
 
 div#fs_disp_container > * > h3 {
-    font-size: 1.3vh;
+    font-size: calc(1.3vh * var(--xde-font-scale, 1.45));
     max-width: 100%;
     max-height: 30%;
     margin: 0px;
@@ -135,7 +135,7 @@ section#filesystem.list-view > div#fs_disp_container:not(.disks) > div > h3 {
 }
 
 section#filesystem.list-view > div#fs_disp_container:not(.disks) > div > h4 {
-    font-size: 1.3vh;
+    font-size: calc(1.3vh * var(--xde-font-scale, 1.45));
     font-weight: normal;
     padding-top: .2vh;
     text-align: right;
@@ -199,7 +199,7 @@ div#fs_space_bar > h1 {
     border-radius: 2px;
     font-family: var(--font_main);
     font-weight: bold;
-    font-size: 1.5vh;
+    font-size: calc(1.5vh * var(--xde-font-scale, 1.45));
     cursor: pointer;
 }
 
@@ -214,7 +214,7 @@ div#fs_space_bar > h3 {
     width: 30%;
     margin: 0;
     display: inline-block;
-    font-size: 1.4vh;
+    font-size: calc(1.4vh * var(--xde-font-scale, 1.45));
     font-weight: normal;
     white-space: nowrap;
     position: relative;
@@ -269,7 +269,7 @@ div#fs_space_bar > progress::-webkit-progress-value {
     color: rgb(var(--color_r), var(--color_g), var(--color_b));
     border: 0.15vh solid rgb(var(--color_r), var(--color_g), var(--color_b));
     padding: 0.4vh 0.2vh;
-    font-size: 1.4vh;
+    font-size: calc(1.4vh * var(--xde-font-scale, 1.45));
     resize: none;
     overflow: auto;
     width: 50vw;

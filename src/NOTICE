@@ -1,0 +1,32 @@
+AnymousDEX
+Copyright (C) 2026 anymousdark
+
+This program is a modified version of eDEX-UI:
+
+    eDEX-UI
+    Copyright (C) 2017-2021 Gabriel "Squared" SAILLARD <gabriel@saillard.dev>
+    https://github.com/GitSquared/edex-ui
+
+Upstream project archived on October 18th, 2021.
+Upstream license: GNU General Public License v3.0.
+
+Modifications in this fork include, but are not limited to:
+
+  - rebranding: application name, icon, installer metadata, documentation
+  - removal of upstream marketing assets (sponsor banner, teaser GIF,
+    screenshots, logo)
+  - a new default "nord-plus" theme and visual polish
+  - update checker retargeted to this repository
+  - an automated GitHub Actions build pipeline
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>.

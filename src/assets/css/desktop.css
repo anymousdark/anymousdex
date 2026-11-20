@@ -1,0 +1,733 @@
+/* anyDEXpro - clean desktop visual layer
+   Built for the session that replaced the dashboard: wallpaper, panel and app windows.
+   Everything here uses px so the interface keeps the same proportions on every screen. */
+
+body.xde-clean-desktop {
+    padding: 0 !important;
+    overflow: hidden;
+    font-size: 14px;
+    color: #dde3ec;
+}
+
+body.xde-clean-desktop #main_shell,
+body.xde-clean-desktop #filesystem.xde-window-open,
+body.xde-clean-desktop #settingsOverlay,
+body.xde-clean-desktop #textEditorOverlay,
+body.xde-clean-desktop #browserOverlay {
+    --xde-win-border: rgba(var(--color_r), var(--color_g), var(--color_b), 0.2);
+    --xde-win-bg: rgba(12, 17, 24, 0.95);
+    border: 1px solid var(--xde-win-border);
+    border-radius: 12px;
+    background: var(--xde-win-bg);
+    box-shadow:
+        0 28px 70px rgba(0, 0, 0, 0.62),
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    backdrop-filter: blur(16px);
+}
+
+/* ---------- panel ---------- */
+
+body.xde-clean-desktop #xde_taskbar {
+    height: 50px;
+    padding: 0 8px;
+    gap: 6px;
+    background: linear-gradient(180deg, rgba(16, 21, 30, 0.9), rgba(9, 12, 18, 0.96));
+    border-top: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.2);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(18px);
+}
+
+body.xde-clean-desktop .xde-start {
+    height: 38px;
+    padding: 0 13px 0 7px;
+    gap: 9px;
+    border: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.26);
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(var(--color_r), var(--color_g), var(--color_b), 0.16), rgba(var(--color_r), var(--color_g), var(--color_b), 0.04));
+}
+
+body.xde-clean-desktop .xde-start:hover {
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.6);
+    box-shadow: 0 0 14px rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+}
+
+body.xde-clean-desktop .xde-logo {
+    width: 27px;
+    height: 27px;
+    border-radius: 7px;
+}
+
+body.xde-clean-desktop .xde-logo svg { width: 17px; height: 17px; }
+
+body.xde-clean-desktop .xde-start-text {
+    gap: 2px;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+}
+
+body.xde-clean-desktop .xde-panel-sep {
+    width: 1px;
+    height: 26px;
+    margin: 0 3px;
+}
+
+body.xde-clean-desktop .xde-tasks {
+    gap: 3px;
+    overflow: visible;
+}
+
+body.xde-clean-desktop .xde-task {
+    height: 36px;
+    padding: 0 12px;
+    gap: 7px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.66);
+}
+
+body.xde-clean-desktop .xde-task svg {
+    width: 17px;
+    height: 17px;
+}
+
+body.xde-clean-desktop .xde-task:hover {
+    color: #eef2f8;
+    background: rgba(255, 255, 255, 0.055);
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+body.xde-clean-desktop .xde-task.active {
+    color: #f2f5fa;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.12);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.26);
+}
+
+body.xde-clean-desktop .xde-task.active::after {
+    left: 11px;
+    right: 11px;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+}
+
+body.xde-clean-desktop .xde-tray { gap: 6px; }
+
+body.xde-clean-desktop .xde-tray-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+}
+
+body.xde-clean-desktop .xde-tray-btn svg { width: 16px; height: 16px; }
+
+body.xde-clean-desktop .xde-tray-stats {
+    min-width: 100px;
+    padding: 0 9px;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+body.xde-clean-desktop .xde-tray-stats span {
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+}
+
+body.xde-clean-desktop .xde-clock {
+    min-width: 84px;
+    padding: 0 4px;
+}
+
+body.xde-clean-desktop #xde_clock_time {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+
+body.xde-clean-desktop #xde_clock_date {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+}
+
+/* ---------- desktop shortcuts ---------- */
+
+#xde_desktop_icons {
+    display: none;
+}
+
+body.xde-clean-desktop #xde_desktop_icons {
+    position: fixed;
+    left: 14px;
+    top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 5;
+    user-select: none;
+}
+
+body.xde-clean-desktop.xde-hide-desktop-icons #xde_desktop_icons {
+    display: none;
+}
+
+.xde-dicon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 172px;
+    min-height: 52px;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: rgba(10, 14, 20, 0.32);
+    color: rgba(233, 238, 246, 0.9);
+    font-family: var(--font_main), sans-serif;
+    font-size: 13.5px;
+    text-align: left;
+    transition: background 0.12s linear, border-color 0.12s linear;
+}
+
+.xde-dicon span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.14);
+    border: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.22);
+}
+
+.xde-dicon svg { width: 19px; height: 19px; }
+
+.xde-dicon b {
+    font-size: 13.5px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+}
+
+.xde-dicon:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.3);
+}
+
+.xde-dicon:active { transform: scale(0.985); }
+
+/* ---------- terminal window ---------- */
+
+body.xde-clean-desktop section#main_shell {
+    left: 15vw;
+    top: calc((100vh - 50px - 68vh) / 2);
+    width: 70vw;
+    height: 68vh;
+    min-width: 520px;
+    min-height: 320px;
+    padding: 0;
+    resize: both;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+body.xde-clean-desktop #main_shell_titlebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 42px;
+    margin: 0;
+    padding: 0 8px 0 13px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012));
+}
+
+.xde-window-id { gap: 9px; }
+
+.xde-window-id svg {
+    width: 18px;
+    height: 18px;
+    opacity: 0.85;
+}
+
+.xde-window-id strong {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.xde-window-id small {
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.5);
+}
+
+.xde-win-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.xde-win-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.66);
+    transition: background 0.1s linear, color 0.1s linear;
+}
+
+.xde-win-btn:hover {
+    background: rgba(255, 255, 255, 0.09);
+    color: #eef2f8;
+}
+
+.xde-win-btn.close:hover {
+    background: rgba(191, 97, 106, 0.9);
+    color: #fff;
+}
+
+.xde-win-btn svg { width: 12px; height: 12px; }
+
+body.xde-clean-desktop ul#main_shell_tabs {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 36px;
+    margin: 0;
+    padding: 0 8px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 2px;
+    border: none;
+    border-bottom: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.13);
+    border-radius: 0;
+    background: rgba(8, 12, 17, 0.5);
+    overflow: hidden;
+}
+
+body.xde-clean-desktop ul#main_shell_tabs > li {
+    width: auto;
+    min-width: 78px;
+    flex: 0 0 auto;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 7px 7px 0 0;
+    background: transparent;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.5);
+    font-size: 11.5px;
+    letter-spacing: 0.09em;
+    transform: none;
+    transition: background 0.1s linear, color 0.1s linear;
+}
+
+body.xde-clean-desktop ul#main_shell_tabs > li > p {
+    margin: 0;
+    transform: none;
+}
+
+body.xde-clean-desktop ul#main_shell_tabs > li:hover {
+    color: #e6ebf3;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.xde-clean-desktop ul#main_shell_tabs > li.active {
+    color: #f2f5fa;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.1);
+    box-shadow: inset 0 -2px 0 rgb(var(--color_r), var(--color_g), var(--color_b));
+    transform: none;
+    z-index: auto;
+    font-weight: 500;
+}
+
+body.xde-clean-desktop ul#main_shell_tabs > li#shell_tab_editor { margin-left: auto; }
+body.xde-clean-desktop ul#main_shell_tabs > li#shell_tab_web { margin-left: 0; }
+
+body.xde-clean-desktop ul#main_shell_tabs > li#shell_tab_editor,
+body.xde-clean-desktop ul#main_shell_tabs > li#shell_tab_web {
+    padding: 0 14px;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.07);
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.62);
+    letter-spacing: 0.09em;
+}
+
+body.xde-clean-desktop ul#main_shell_tabs > li#shell_tab_editor:hover,
+body.xde-clean-desktop ul#main_shell_tabs > li#shell_tab_web:hover {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+    color: #eef2f8;
+}
+
+body.xde-clean-desktop #main_shell_innercontainer {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: auto;
+    position: relative;
+    background: rgba(8, 12, 17, 0.62);
+}
+
+body.xde-clean-desktop #main_shell_innercontainer pre {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body.xde-clean-desktop #main_shell_innercontainer .xterm {
+    padding: 9px 6px 6px 12px;
+    box-sizing: border-box;
+}
+
+/* ---------- files window ---------- */
+
+body.xde-clean-desktop section#filesystem.xde-window-open {
+    left: 20vw;
+    top: calc((100vh - 50px - 60vh) / 2 + 3vh);
+    width: 60vw;
+    height: 60vh;
+    min-width: 460px;
+    min-height: 300px;
+    padding: 0;
+    margin: 0;
+    display: flex !important;
+    flex-direction: column;
+    resize: both;
+    overflow: hidden;
+    box-sizing: border-box;
+    z-index: 20;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open > h3.title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    height: 42px;
+    margin: 0;
+    padding: 0 78px 0 13px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012));
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open > h3.title > p:first-child {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 600;
+    color: #e9eef6;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open > h3.title > p:last-child {
+    margin-left: auto;
+    padding-left: 0;
+    max-width: 56%;
+    font-size: 11.5px;
+    letter-spacing: 0.01em;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.52);
+}
+
+.xde-fs-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    color: rgb(var(--color_r), var(--color_g), var(--color_b));
+    opacity: 0.85;
+}
+
+.xde-fs-icon svg { width: 18px; height: 18px; }
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 10px 12px 6px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(94px, 1fr));
+    grid-auto-rows: 112px;
+    grid-gap: 4px;
+    align-content: start;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > * {
+    width: auto;
+    height: 112px;
+    padding: 9px 4px 7px;
+    box-sizing: border-box;
+    border-radius: 9px;
+    justify-content: flex-start;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > *:hover {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.09);
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > * > svg {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 6px;
+    flex: 0 0 auto;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_disp_container > * > h3 {
+    max-height: 46px;
+    padding: 0 2px;
+    font-size: 12.5px;
+    line-height: 1.3;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: rgba(231, 236, 244, 0.86);
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar {
+    position: relative;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex: 0 0 auto;
+    height: 34px;
+    padding: 0 14px;
+    box-sizing: border-box;
+    border-top: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.12);
+    background: rgba(8, 12, 17, 0.45);
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar > h3 {
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.6);
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar > progress {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    height: 6px;
+    margin: 0 2px 0 10px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.14);
+    overflow: hidden;
+    position: relative;
+    top: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar > progress::after {
+    display: none;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar > progress::-webkit-progress-bar {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.14);
+    height: 6px;
+    border-radius: 3px;
+    position: static;
+}
+
+body.xde-clean-desktop section#filesystem.xde-window-open #fs_space_bar > progress::-webkit-progress-value {
+    background: rgb(var(--color_r), var(--color_g), var(--color_b));
+    height: 6px;
+    border-radius: 3px;
+    position: static;
+}
+
+.xde-fs-close,
+.xde-fs-min {
+    position: absolute;
+    top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    color: rgba(var(--color_r), var(--color_g), var(--color_b), 0.6);
+    z-index: 3;
+}
+
+.xde-fs-min { right: 42px; }
+.xde-fs-close { right: 10px; }
+
+.xde-fs-close svg,
+.xde-fs-min svg { width: 12px; height: 12px; }
+
+.xde-fs-close:hover {
+    color: #fff;
+    background: rgba(191, 97, 106, 0.9);
+    border-color: transparent;
+}
+
+.xde-fs-min:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- settings / editor / browser ---------- */
+
+body.xde-clean-desktop #settingsOverlay {
+    top: 7vh;
+    left: 50%;
+    right: auto;
+    width: 880px;
+    max-width: 88vw;
+    height: 620px;
+    max-height: 82vh;
+    margin-left: -440px;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.66), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+body.xde-clean-desktop #settingsOverlay > header.se-head {
+    height: 60px;
+    padding: 0 12px 0 16px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+}
+
+body.xde-clean-desktop #settingsOverlay .se-body {
+    max-height: none;
+}
+
+body.xde-clean-desktop #textEditorOverlay {
+    left: 15vw;
+    top: 8vh;
+    width: 70vw;
+    height: 74vh;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.66), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+body.xde-clean-desktop #browserOverlay {
+    left: 14vw;
+    top: 7vh;
+    width: 72vw;
+    height: 72vh;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.66), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+body.xde-clean-desktop #textEditorOverlay > header,
+body.xde-clean-desktop #browserOverlay > header {
+    min-height: 42px;
+    box-sizing: border-box;
+    padding-left: 13px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012));
+    border-bottom: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.16);
+}
+
+/* ---------- start menu ---------- */
+
+body.xde-clean-desktop #xde_menu {
+    left: 8px;
+    bottom: 58px;
+    width: 660px;
+    height: 470px;
+    max-height: calc(100vh - 78px);
+    border-radius: 12px;
+    border: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.24);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.62);
+    overflow: hidden;
+}
+
+body.xde-clean-desktop .xde-menu-head {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(var(--color_r), var(--color_g), var(--color_b), 0.14);
+}
+
+body.xde-clean-desktop .xde-menu-search {
+    margin: 12px 16px 0;
+    height: 38px;
+    border-radius: 8px;
+}
+
+body.xde-clean-desktop .xde-menu-search input { font-size: 13px; }
+
+body.xde-clean-desktop .xde-menu-body { padding: 10px 12px 12px; }
+
+body.xde-clean-desktop .xde-menu-side { width: 148px; gap: 2px; }
+
+body.xde-clean-desktop .xde-menu-side .xde-cat {
+    height: 38px;
+    border-radius: 7px;
+    font-size: 13px;
+}
+
+body.xde-clean-desktop .xde-app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+
+body.xde-clean-desktop .xde-app {
+    padding: 9px 10px;
+    border-radius: 9px;
+}
+
+body.xde-clean-desktop .xde-app-icon { width: 34px; height: 34px; border-radius: 8px; }
+body.xde-clean-desktop .xde-app-icon svg { width: 19px; height: 19px; }
+body.xde-clean-desktop .xde-app-text strong { font-size: 13px; }
+body.xde-clean-desktop .xde-app-text small { font-size: 11px; }
+
+/* ---------- polishing ---------- */
+
+body.xde-clean-desktop #xde_token,
+body.xde-clean-desktop #xde_desktop { display: none !important; }
+
+body.xde-clean-desktop ::-webkit-scrollbar { width: 10px; height: 10px; }
+body.xde-clean-desktop ::-webkit-scrollbar-track { background: transparent; }
+body.xde-clean-desktop ::-webkit-scrollbar-thumb {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.2);
+    border: 3px solid transparent;
+    border-radius: 8px;
+    background-clip: content-box;
+}
+body.xde-clean-desktop ::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--color_r), var(--color_g), var(--color_b), 0.36);
+    background-clip: content-box;
+    border: 3px solid transparent;
+}
+
+@media (max-width: 1100px) {
+    body.xde-clean-desktop section#main_shell { left: 4vw; width: 84vw; }
+    body.xde-clean-desktop section#filesystem.xde-window-open { left: 10vw; width: 74vw; }
+    body.xde-clean-desktop .xde-task span { display: none; }
+    body.xde-clean-desktop .xde-task { padding: 0 9px; }
+}
+
+/* ---------- keyboard vs app windows ---------- */
+
+/* Hide on-screen keyboard whenever any app window is open */
+body.xde-clean-desktop section#main_shell:not(.xde-term-min) ~ section#keyboard,
+body.xde-clean-desktop section#filesystem.xde-window-open ~ section#keyboard,
+body.xde-clean-desktop #textEditorOverlay.open ~ section#keyboard,
+body.xde-clean-desktop #browserOverlay.open ~ section#keyboard,
+body.xde-clean-desktop #settingsOverlay.open ~ section#keyboard {
+    display: none !important;
+}
+
+/* Desktop icons always visible when no app fullscreen backdrop is active */
+body.xde-clean-desktop #xde_desktop_icons {
+    z-index: 60;
+}

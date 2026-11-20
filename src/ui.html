@@ -2,9 +2,9 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <meta http-equiv="Content-Security-Policy" content="default-src file: 'unsafe-inline'; img-src file: data:; media-src file:; connect-src ws: file:">
+        <meta http-equiv="Content-Security-Policy" content="default-src file: 'unsafe-inline'; img-src file: data:; media-src file:; connect-src ws: file:; frame-src https: http: file:;">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AnymousDEX</title>
+        <title>anyDEXpro</title>
 
         <!-- Load dependency css -->
         <link rel="stylesheet" href="node_modules/augmented-ui/augmented.css" />
@@ -30,8 +30,15 @@
         <link rel="stylesheet" href="assets/css/mod_toplist.css" />
         <link rel="stylesheet" href="assets/css/mod_fuzzyFinder.css" />
         <link rel="stylesheet" href="assets/css/mod_processlist.css" />
+        <!-- AnymousDEX modules -->
+        <link rel="stylesheet" href="assets/css/text_editor.css" />
+        <link rel="stylesheet" href="assets/css/browser.css" />
+        <link rel="stylesheet" href="assets/css/shell.css" />
+        <link rel="stylesheet" href="assets/css/settings.css" />
         <!-- Load extra CSS -->
         <link rel="stylesheet" href="assets/css/extra_ratios.css" />
+        <!-- Clean desktop session -->
+        <link rel="stylesheet" href="assets/css/desktop.css" />
 
         <!-- Load dependency js -->
         <script src="node_modules/pdfjs-dist/build/pdf.js"></script>
@@ -54,6 +61,11 @@
         <script src="classes/ramwatcher.class.js"></script>
         <script src="classes/toplist.class.js"></script>
         <script src="classes/fuzzyFinder.class.js"></script>
+        <!-- AnymousDEX modules -->
+        <script src="classes/textEditor.class.js"></script>
+        <script src="classes/browser.class.js"></script>
+        <script src="classes/shell.class.js"></script>
+        <script src="classes/settings.class.js"></script>
         <!-- Load extra classes -->
         <script src="classes/audiofx.class.js"></script>
     </head>

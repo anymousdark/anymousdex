@@ -1,8 +1,8 @@
 {
   "name": "anymousdex",
-  "productName": "AnymousDEX",
-  "version": "1.0.0",
-  "description": "AnymousDEX sci-fi interface",
+  "productName": "anyDEXpro",
+  "version": "1.2.0",
+  "description": "anyDEXpro XFCE-inspired terminal workspace",
   "keywords": [
     "desktop",
     "sci-fi",
@@ -19,9 +19,9 @@
   "author": "anymousdark",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/GitSquared/edex-ui/issues"
+    "url": "https://github.com/anymousdark/anymousdex/issues"
   },
-  "homepage": "https://github.com/GitSquared/edex-ui#readme",
+  "homepage": "https://github.com/anymousdark/anymousdex#readme",
   "dependencies": {
     "@electron/remote": "^1.2.2",
     "augmented-ui": "^1.1.2",

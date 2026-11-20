@@ -288,6 +288,9 @@ class Keyboard {
         };
 
         this.keydownHandler = e => {
+            // The built-in editor handles its own keys: skip visual and audio feedback
+            if (document.body.classList.contains("editorOpen")) return;
+
             // See #330
             if (e.getModifierState("AltGraph") && e.code === "AltRight") {
                 document.querySelector('div.keyboard_key[data-cmd="ESCAPED|-- CTRL: LEFT"]').setAttribute("class", "keyboard_key");
